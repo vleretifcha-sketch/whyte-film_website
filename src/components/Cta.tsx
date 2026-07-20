@@ -13,6 +13,10 @@ const lines = [
   ["COLLABORATE?"],
 ];
 
+/** Oblique wipe: diagonal edge sweeps upward (/ ) */
+const clipHidden = "polygon(0% 130%, 100% 95%, 100% 95%, 0% 130%)";
+const clipShown = "polygon(0% -15%, 100% 0%, 100% 115%, 0% 100%)";
+
 export function Cta() {
   const root = useRef<HTMLElement>(null);
 
@@ -21,20 +25,23 @@ export function Cta() {
       const section = root.current;
       if (!section) return;
 
+      const masks = gsap.utils.toArray<HTMLElement>(".cta-mask", section);
       const words = gsap.utils.toArray<HTMLElement>(".cta-word", section);
       const rest = gsap.utils.toArray<HTMLElement>(".cta-rest", section);
 
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        gsap.set([words, rest], {
+        gsap.set([masks, words, rest], {
           clearProps: "all",
           opacity: 1,
           yPercent: 0,
           y: 0,
+          clipPath: "none",
         });
         return;
       }
 
-      gsap.set(words, { yPercent: 115, opacity: 0 });
+      gsap.set(masks, { clipPath: clipHidden });
+      gsap.set(words, { yPercent: 120 });
       gsap.set(rest, { opacity: 0, y: 20 });
 
       const tl = gsap.timeline({
@@ -50,24 +57,33 @@ export function Cta() {
       });
 
       tl.to(
-        words,
+        masks,
         {
-          yPercent: 0,
-          opacity: 1,
+          clipPath: clipShown,
           stagger: 0.14,
-          duration: 0.45,
+          duration: 0.5,
         },
         0.1,
-      ).to(
-        rest,
-        {
-          opacity: 1,
-          y: 0,
-          stagger: 0.1,
-          duration: 0.4,
-        },
-        0.55,
-      );
+      )
+        .to(
+          words,
+          {
+            yPercent: 0,
+            stagger: 0.14,
+            duration: 0.5,
+          },
+          0.1,
+        )
+        .to(
+          rest,
+          {
+            opacity: 1,
+            y: 0,
+            stagger: 0.1,
+            duration: 0.4,
+          },
+          0.55,
+        );
     },
     { scope: root },
   );
@@ -88,7 +104,7 @@ export function Cta() {
             {line.map((word) => (
               <span
                 key={word}
-                className="inline-block overflow-hidden pb-[0.08em]"
+                className="cta-mask inline-block pb-[0.12em] will-change-[clip-path]"
               >
                 <span className="cta-word inline-block will-change-transform">
                   {word}

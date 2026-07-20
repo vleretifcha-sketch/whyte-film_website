@@ -66,15 +66,39 @@ export function About({ showHeader = true }: { showHeader?: boolean }) {
       });
 
       const collage = collageRef.current;
-      if (
-        !collage ||
-        !contextSafe ||
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ) {
-        return;
-      }
+      if (!collage) return;
 
       const items = gsap.utils.toArray<HTMLElement>(".about-photo", collage);
+      const inners = gsap.utils.toArray<HTMLElement>(
+        ".about-photo-inner",
+        collage,
+      );
+      const reduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+      // Exit: one-by-one upward once "Established" hits mid-viewport
+      const established = root.current?.querySelector(".about-established");
+      if (!reduced && inners.length && established) {
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: established,
+              start: "center center",
+              endTrigger: collage,
+              end: "bottom top",
+              scrub: 0.65,
+            },
+          })
+          .to(inners, {
+            yPercent: -130,
+            opacity: 0,
+            stagger: 0.18,
+            ease: "power2.in",
+          });
+      }
+
+      if (reduced || !contextSafe) return;
 
       const onMove = contextSafe((event: MouseEvent) => {
         const rect = collage.getBoundingClientRect();
@@ -126,9 +150,10 @@ export function About({ showHeader = true }: { showHeader?: boolean }) {
             {showHeader ? <SectionHeader left="ABOUT US" /> : null}
             <div className="about-reveal flex flex-col gap-10">
               <p className="max-w-[697px] text-[clamp(1.25rem,2.5vw,2rem)] font-normal leading-[1.5] tracking-[-0.02em] text-white">
-                Established in 2023, Whyte Films is a creative media agency built
-                for the fitness industry. We produce premium content that grows
-                and enhances the presence of athletes, influencers and brands.
+                <span className="about-established">Established</span> in 2023,
+                Whyte Films is a creative media agency built for the fitness
+                industry. We produce premium content that grows and enhances the
+                presence of athletes, influencers and brands.
               </p>
               <div>
                 <Button href="/work" variant="outline">
@@ -163,13 +188,15 @@ export function About({ showHeader = true }: { showHeader?: boolean }) {
               className={`about-photo absolute h-[33%] w-[31%] will-change-transform overflow-hidden rounded ${photo.className}`}
               data-strength={photo.strength}
             >
-              <Image
-                src={photo.src}
-                alt=""
-                fill
-                className="object-cover"
-                sizes="170px"
-              />
+              <div className="about-photo-inner absolute inset-0 will-change-transform">
+                <Image
+                  src={photo.src}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  sizes="170px"
+                />
+              </div>
             </div>
           ))}
         </div>

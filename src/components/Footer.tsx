@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { FormEvent } from "react";
+import {
+  useCallback,
+  useState,
+  type CSSProperties,
+  type FormEvent,
+  type MouseEvent,
+} from "react";
 import { ButtonLabel } from "./ui/Button";
 import { footerLinks } from "@/lib/nav";
 
@@ -21,6 +27,22 @@ const metaLinks = [
 ];
 
 export function Footer() {
+  const [lit, setLit] = useState(false);
+  const [spot, setSpot] = useState({ x: "50%", y: "50%" });
+
+  const onWordmarkMove = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setSpot({
+      x: `${event.clientX - rect.left}px`,
+      y: `${event.clientY - rect.top}px`,
+    });
+    setLit(true);
+  }, []);
+
+  const onWordmarkLeave = useCallback(() => {
+    setLit(false);
+  }, []);
+
   return (
     <footer className="bg-[#010101] px-[var(--pad)] pb-8 pt-16 text-white md:pb-10 md:pt-24">
       <div className="mx-auto flex max-w-[1408px] flex-col">
@@ -130,15 +152,34 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Gradient wordmark */}
-        <div className="pointer-events-none relative select-none py-10 md:py-16">
-          <Image
-            src="/assets/logo-wordmark-footer.svg"
-            alt="whyte films"
-            width={1409}
-            height={214}
-            className="mx-auto h-auto w-full max-w-[1409px]"
-          />
+        {/* Gradient wordmark — flashlight around cursor */}
+        <div className="select-none py-10 md:py-16">
+          <Link
+            href="/"
+            aria-label="whyte films — home"
+            className={`footer-wordmark relative mx-auto block w-full max-w-[1409px] outline-none ${
+              lit ? "is-lit" : ""
+            }`}
+            style={
+              {
+                "--mx": spot.x,
+                "--my": spot.y,
+              } as CSSProperties
+            }
+            onMouseMove={onWordmarkMove}
+            onMouseEnter={onWordmarkMove}
+            onMouseLeave={onWordmarkLeave}
+          >
+            <Image
+              src="/assets/logo-wordmark-footer.svg"
+              alt=""
+              width={1409}
+              height={214}
+              className="relative h-auto w-full"
+              aria-hidden
+            />
+            <span className="footer-wordmark__fill" aria-hidden />
+          </Link>
         </div>
 
         {/* Bottom bar */}

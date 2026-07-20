@@ -50,12 +50,47 @@ const TEAM = [
   },
 ] as const;
 
+function TeamCardContent({ member }: { member: (typeof TEAM)[number] }) {
+  return (
+    <div className="flex h-full w-full gap-4">
+      <div className="relative h-[108px] w-[85px] shrink-0 overflow-hidden rounded-xl">
+        <Image
+          src={member.image}
+          alt={member.name}
+          fill
+          className="object-cover"
+          sizes="85px"
+        />
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col gap-3">
+        <p className="text-sm font-medium text-white/60">Team</p>
+        <div>
+          <p className="text-lg font-bold text-white">{member.name}</p>
+          <p className="text-sm font-medium text-white/60">{member.role}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Hero() {
   const root = useRef<HTMLElement>(null);
   const rotateRef = useRef<HTMLSpanElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [teamIndex, setTeamIndex] = useState(0);
-  const member = TEAM[teamIndex];
+  const [teamTick, setTeamTick] = useState(0);
+
+  const selectTeam = (index: number) => {
+    setTeamIndex(index);
+    setTeamTick((t) => t + 1);
+  };
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setTeamIndex((prev) => (prev + 1) % TEAM.length);
+    }, 4000);
+    return () => window.clearInterval(id);
+  }, [teamTick]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -251,35 +286,41 @@ export function Hero() {
           </div>
 
           <div
-            className="hero-card flex gap-4 rounded-2xl border border-white/15 bg-white/15 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-2xl backdrop-saturate-150 supports-[backdrop-filter]:bg-white/10"
+            className="hero-card flex w-[min(100%,340px)] gap-4 rounded-2xl border border-white/15 bg-white/15 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-2xl backdrop-saturate-150 supports-[backdrop-filter]:bg-white/10"
             role="group"
             aria-roledescription="carousel"
             aria-label="Team"
           >
-            <div className="relative h-[108px] w-[85px] shrink-0 overflow-hidden rounded-xl">
-              <Image
-                key={member.image}
-                src={member.image}
-                alt={member.name}
-                fill
-                className="object-cover"
-                sizes="85px"
-              />
+            <div
+              className="relative h-[108px] min-w-0 flex-1 overflow-hidden [perspective:900px]"
+              aria-live="polite"
+            >
+              {TEAM.map((person, index) => {
+                const isActive = index === teamIndex;
+                return (
+                  <div
+                    key={person.name}
+                    className="absolute inset-0 origin-center transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none [backface-visibility:hidden]"
+                    style={{
+                      transform: isActive
+                        ? "rotateX(0deg)"
+                        : "rotateX(85deg)",
+                      opacity: isActive ? 1 : 0,
+                      pointerEvents: isActive ? "auto" : "none",
+                    }}
+                    aria-hidden={!isActive}
+                  >
+                    <TeamCardContent member={person} />
+                  </div>
+                );
+              })}
             </div>
-            <div className="flex min-w-0 w-[177px] flex-col gap-3">
-              <p className="text-sm font-medium text-white/60">Team</p>
-              <div key={member.name}>
-                <p className="text-lg font-bold text-white">{member.name}</p>
-                <p className="text-sm font-medium text-white/60">
-                  {member.role}
-                </p>
-              </div>
-            </div>
+
             <div className="flex shrink-0 flex-col items-end justify-between">
               <a
                 href="/about"
                 className="flex size-12 items-center justify-center rounded-xl !bg-white !text-[#010101] transition-transform hover:scale-105"
-                aria-label={`About ${member.name}`}
+                aria-label={`About ${TEAM[teamIndex].name}`}
               >
                 <ArrowUpRight color="#010101" />
               </a>
@@ -297,7 +338,7 @@ export function Hero() {
                       role="tab"
                       aria-selected={isActive}
                       aria-label={person.name}
-                      onClick={() => setTeamIndex(index)}
+                      onClick={() => selectTeam(index)}
                       className="flex h-6 w-3 items-end justify-center"
                     >
                       <span

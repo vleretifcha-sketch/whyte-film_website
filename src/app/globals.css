@@ -75,6 +75,58 @@
   font-family: var(--font-display);
 }
 
+/* Footer wordmark: flashlight — white only around cursor */
+.footer-wordmark__fill {
+  position: absolute;
+  inset: 0;
+  background-color: #fff;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  --spot: 0px;
+  -webkit-mask-image:
+    radial-gradient(
+      circle var(--spot) at var(--mx) var(--my),
+      #000 0%,
+      #000 28%,
+      transparent 72%
+    ),
+    url("/assets/logo-wordmark.svg");
+  mask-image:
+    radial-gradient(
+      circle var(--spot) at var(--mx) var(--my),
+      #000 0%,
+      #000 28%,
+      transparent 72%
+    ),
+    url("/assets/logo-wordmark.svg");
+  -webkit-mask-size: 100% 100%, 100% 100%;
+  mask-size: 100% 100%, 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+.footer-wordmark.is-lit .footer-wordmark__fill {
+  opacity: 1;
+  --spot: clamp(5rem, 18vw, 11rem);
+}
+
+.footer-wordmark:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.45);
+  outline-offset: 8px;
+}
+
+.footer-wordmark:focus-visible .footer-wordmark__fill {
+  opacity: 1;
+  --spot: clamp(6rem, 22vw, 14rem);
+  --mx: 50%;
+  --my: 50%;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -302,6 +354,16 @@ button {
   .marquee-track,
   .partners-marquee {
     animation: none;
+  }
+
+  .footer-wordmark__fill {
+    transition: none;
+  }
+
+  .footer-wordmark.is-lit .footer-wordmark__fill,
+  .footer-wordmark:focus-visible .footer-wordmark__fill {
+    --spot: 0px;
+    opacity: 0;
   }
 
   html {
