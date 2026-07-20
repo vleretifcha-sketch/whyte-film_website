@@ -4,13 +4,19 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   useCallback,
+  useRef,
   useState,
   type CSSProperties,
   type FormEvent,
   type MouseEvent,
 } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 import { ButtonLabel } from "./ui/Button";
 import { footerLinks } from "@/lib/nav";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const socials = [
   { href: "https://instagram.com", label: "Instagram" },
@@ -27,6 +33,7 @@ const metaLinks = [
 ];
 
 export function Footer() {
+  const footerRef = useRef<HTMLElement>(null);
   const [lit, setLit] = useState(false);
   const [spot, setSpot] = useState({ x: "50%", y: "50%" });
 
@@ -43,8 +50,43 @@ export function Footer() {
     setLit(false);
   }, []);
 
+  useGSAP(
+    () => {
+      const reveal = footerRef.current?.querySelector(".footer-wordmark-reveal");
+      const inner = footerRef.current?.querySelector(".footer-wordmark-inner");
+      if (!reveal || !inner) return;
+
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        gsap.set(inner, { yPercent: 0 });
+        return;
+      }
+
+      // yPercent + overflow: appears bottom→top, reverses top→bottom.
+      // clamp() so it still completes at the end of the page.
+      gsap.fromTo(
+        inner,
+        { yPercent: 105 },
+        {
+          yPercent: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: reveal,
+            start: "clamp(top 95%)",
+            end: "clamp(top 65%)",
+            scrub: 0.55,
+            invalidateOnRefresh: true,
+          },
+        },
+      );
+    },
+    { scope: footerRef },
+  );
+
   return (
-    <footer className="bg-[#010101] px-[var(--pad)] pb-8 pt-16 text-white md:pb-10 md:pt-24">
+    <footer
+      ref={footerRef}
+      className="bg-[#010101] px-[var(--pad)] pb-8 pt-16 text-white md:pb-10 md:pt-24"
+    >
       <div className="mx-auto flex max-w-[1408px] flex-col">
         {/* Top bar */}
         <div className="flex items-end justify-between border-b border-white pb-4 text-sm font-medium lowercase tracking-wide md:text-base">
@@ -152,34 +194,38 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Gradient wordmark — flashlight around cursor */}
+        {/* Gradient wordmark — reveal + flashlight */}
         <div className="select-none py-10 md:py-16">
-          <Link
-            href="/"
-            aria-label="whyte films — home"
-            className={`footer-wordmark relative mx-auto block w-full max-w-[1409px] outline-none ${
-              lit ? "is-lit" : ""
-            }`}
-            style={
-              {
-                "--mx": spot.x,
-                "--my": spot.y,
-              } as CSSProperties
-            }
-            onMouseMove={onWordmarkMove}
-            onMouseEnter={onWordmarkMove}
-            onMouseLeave={onWordmarkLeave}
-          >
-            <Image
-              src="/assets/logo-wordmark-footer.svg"
-              alt=""
-              width={1409}
-              height={214}
-              className="relative h-auto w-full"
-              aria-hidden
-            />
-            <span className="footer-wordmark__fill" aria-hidden />
-          </Link>
+          <div className="footer-wordmark-reveal overflow-hidden">
+            <div className="footer-wordmark-inner will-change-transform">
+              <Link
+                href="/"
+                aria-label="whyte films — home"
+                className={`footer-wordmark relative mx-auto block w-full max-w-[1409px] outline-none ${
+                  lit ? "is-lit" : ""
+                }`}
+                style={
+                  {
+                    "--mx": spot.x,
+                    "--my": spot.y,
+                  } as CSSProperties
+                }
+                onMouseMove={onWordmarkMove}
+                onMouseEnter={onWordmarkMove}
+                onMouseLeave={onWordmarkLeave}
+              >
+                <Image
+                  src="/assets/logo-wordmark-footer.svg"
+                  alt=""
+                  width={1409}
+                  height={214}
+                  className="relative h-auto w-full"
+                  aria-hidden
+                />
+                <span className="footer-wordmark__fill" aria-hidden />
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Bottom bar */}

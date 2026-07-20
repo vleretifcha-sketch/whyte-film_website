@@ -1,7 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type MouseEvent,
+} from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { Button } from "./ui/Button";
@@ -79,11 +86,26 @@ export function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [teamIndex, setTeamIndex] = useState(0);
   const [teamTick, setTeamTick] = useState(0);
+  const [wordmarkLit, setWordmarkLit] = useState(false);
+  const [wordmarkSpot, setWordmarkSpot] = useState({ x: "50%", y: "50%" });
 
   const selectTeam = (index: number) => {
     setTeamIndex(index);
     setTeamTick((t) => t + 1);
   };
+
+  const onWordmarkMove = useCallback((event: MouseEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setWordmarkSpot({
+      x: `${event.clientX - rect.left}px`,
+      y: `${event.clientY - rect.top}px`,
+    });
+    setWordmarkLit(true);
+  }, []);
+
+  const onWordmarkLeave = useCallback(() => {
+    setWordmarkLit(false);
+  }, []);
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -128,6 +150,7 @@ export function Hero() {
   useGSAP(
     () => {
       const words = gsap.utils.toArray<HTMLElement>(".hero-word");
+      const inks = gsap.utils.toArray<HTMLElement>(".hero-word-ink");
       const rotating = rotateRef.current
         ? Array.from(
             rotateRef.current.querySelectorAll<HTMLElement>(".hero-rotate-word"),
@@ -138,23 +161,24 @@ export function Hero() {
       ).matches;
 
       if (reduced) {
-        gsap.set(words, { yPercent: 0 });
+        gsap.set([words, inks], { yPercent: 0 });
       } else {
         // Clip + translate only — never opacity: 0 on wordmark
-        gsap.set(words, { yPercent: 115 });
+        gsap.set([words, inks], { yPercent: 115 });
 
         const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-        tl.to(words, {
-          yPercent: 0,
-          duration: 1.05,
-          stagger: 0.18,
-        })
-          .from(
-            ".hero-copy-block",
-            { opacity: 0, y: 28, duration: 0.8, stagger: 0.12 },
-            "-=0.45",
-          )
-          .from(".hero-card", { opacity: 0, y: 24, duration: 0.7 }, "-=0.4");
+        words.forEach((word, i) => {
+          tl.to(
+            [word, inks[i]].filter(Boolean),
+            { yPercent: 0, duration: 1.05 },
+            i * 0.18,
+          );
+        });
+        tl.from(
+          ".hero-copy-block",
+          { opacity: 0, y: 28, duration: 0.8, stagger: 0.12 },
+          "-=0.45",
+        ).from(".hero-card", { opacity: 0, y: 24, duration: 0.7 }, "-=0.4");
       }
 
       if (rotating.length < 2) return;
@@ -229,26 +253,67 @@ export function Hero() {
         <h1 className="sr-only">whyte films</h1>
         <div
           aria-hidden
-          className="flex w-full max-w-[1049px] items-end gap-[3.8%] mix-blend-difference"
+          className={`hero-wordmark relative w-full max-w-[1049px] ${
+            wordmarkLit ? "is-lit" : ""
+          }`}
+          style={
+            {
+              "--mx": wordmarkSpot.x,
+              "--my": wordmarkSpot.y,
+            } as CSSProperties
+          }
+          onMouseMove={onWordmarkMove}
+          onMouseEnter={onWordmarkMove}
+          onMouseLeave={onWordmarkLeave}
         >
-          {WORDS.map((word) => (
-            <span
-              key={word.alt}
-              className="inline-block overflow-hidden"
-              style={{ flex: `0 1 ${word.flex}` }}
-            >
-              <span className="hero-word block will-change-transform">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={word.src}
-                  alt=""
-                  width={word.width}
-                  height={word.height}
-                  className="h-auto w-full"
-                />
+          <div className="hero-wordmark__base flex w-full items-end gap-[3.8%]">
+            {WORDS.map((word) => (
+              <span
+                key={word.alt}
+                className="inline-block overflow-hidden"
+                style={{ flex: `0 1 ${word.flex}` }}
+              >
+                <span className="hero-word block will-change-transform">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={word.src}
+                    alt=""
+                    width={word.width}
+                    height={word.height}
+                    className="h-auto w-full"
+                  />
+                </span>
               </span>
-            </span>
-          ))}
+            ))}
+          </div>
+
+          {/* Solid black under cursor */}
+          <div className="hero-wordmark__fill" aria-hidden>
+            <div className="flex w-full items-end gap-[3.8%]">
+              {WORDS.map((word) => (
+                <span
+                  key={`ink-${word.alt}`}
+                  className="inline-block overflow-hidden"
+                  style={{ flex: `0 1 ${word.flex}` }}
+                >
+                  <span
+                    className="hero-word-ink block will-change-transform"
+                    style={
+                      {
+                        aspectRatio: `${word.width} / ${word.height}`,
+                        WebkitMaskImage: `url(${word.src})`,
+                        maskImage: `url(${word.src})`,
+                        WebkitMaskSize: "100% 100%",
+                        maskSize: "100% 100%",
+                        WebkitMaskRepeat: "no-repeat",
+                        maskRepeat: "no-repeat",
+                      } as CSSProperties
+                    }
+                  />
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="flex flex-col items-stretch justify-between gap-10 lg:flex-row lg:items-end">

@@ -75,6 +75,64 @@
   font-family: var(--font-display);
 }
 
+/* Hero wordmark: solid black flashlight under cursor */
+.hero-wordmark {
+  --spot: 0px;
+}
+
+/* Punch out white under the spot to avoid fringe */
+.hero-wordmark.is-lit .hero-wordmark__base {
+  -webkit-mask-image: radial-gradient(
+    circle var(--spot) at var(--mx) var(--my),
+    transparent 0%,
+    transparent 99%,
+    #000 100%
+  );
+  mask-image: radial-gradient(
+    circle var(--spot) at var(--mx) var(--my),
+    transparent 0%,
+    transparent 99%,
+    #000 100%
+  );
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.hero-wordmark__fill {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(
+    circle var(--spot) at var(--mx) var(--my),
+    #000 0%,
+    #000 99%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle var(--spot) at var(--mx) var(--my),
+    #000 0%,
+    #000 99%,
+    transparent 100%
+  );
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.hero-word-ink {
+  width: 100%;
+  background-color: #000;
+}
+
+.hero-wordmark.is-lit {
+  --spot: clamp(5rem, 18vw, 11rem);
+}
+
+.hero-wordmark.is-lit .hero-wordmark__fill {
+  opacity: 1;
+}
+
 /* Footer wordmark: flashlight — white only around cursor */
 .footer-wordmark__fill {
   position: absolute;
@@ -445,12 +503,14 @@ button {
     animation: none;
   }
 
-  .footer-wordmark__fill {
+  .footer-wordmark__fill,
+  .hero-wordmark__fill {
     transition: none;
   }
 
   .footer-wordmark.is-lit .footer-wordmark__fill,
-  .footer-wordmark:focus-visible .footer-wordmark__fill {
+  .footer-wordmark:focus-visible .footer-wordmark__fill,
+  .hero-wordmark.is-lit .hero-wordmark__fill {
     --spot: 0px;
     opacity: 0;
   }

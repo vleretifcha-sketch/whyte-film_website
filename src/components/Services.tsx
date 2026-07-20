@@ -139,7 +139,7 @@ export function Services() {
         <SectionHeader left="SERVICES" />
 
         <div className="flex flex-col items-start gap-10 lg:flex-row lg:gap-4">
-          <div className="flex w-full max-w-[697px] flex-col self-start lg:sticky lg:top-24 lg:max-h-[calc(100svh-6rem)]">
+          <div className="flex w-full max-w-[697px] flex-col self-start lg:sticky lg:top-24 lg:h-[calc(100svh-6rem)]">
             <ul className="flex flex-col gap-6 md:gap-8" role="tablist">
               {services.map((service, index) => {
                 const isActive = index === active;
@@ -173,7 +173,8 @@ export function Services() {
               })}
             </ul>
 
-            <div className="mt-[56px] flex max-w-[410px] flex-col gap-4">
+            {/* Pinned just above the bottom progressive blur on desktop */}
+            <div className="mt-10 flex max-w-[410px] flex-col gap-4 lg:mt-auto lg:pb-[7.5rem]">
               <p
                 key={current.name}
                 className="text-lg leading-[1.5] tracking-[-0.02em] text-white transition-opacity duration-300"
