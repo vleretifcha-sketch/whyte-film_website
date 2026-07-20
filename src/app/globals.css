@@ -155,6 +155,95 @@ a {
   text-decoration: none;
 }
 
+.btn-primary {
+  background-color: #ffffff !important;
+  color: #010101 !important;
+  border: none !important;
+}
+
+/* Booking calendar / time slot selection */
+.book-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 2.75rem;
+  aspect-ratio: 1;
+  margin-inline: auto;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  .book-day {
+    font-size: 0.875rem;
+  }
+}
+
+.book-day--available {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.35);
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.book-day--available:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.book-day--selected {
+  color: #010101 !important;
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  font-weight: 700;
+}
+
+.book-day--disabled {
+  color: rgba(255, 255, 255, 0.22);
+  cursor: not-allowed;
+}
+
+.book-slot {
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background-color: rgba(255, 255, 255, 0.06);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #ffffff;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.book-slot:hover {
+  background-color: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+.book-slot--selected {
+  color: #010101 !important;
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background-color: #ffffff !important;
+  color: #010101 !important;
+}
+
+.btn-primary:disabled {
+  opacity: 0.35;
+}
+
 .btn-secondary {
   color: #ffffff;
 }

@@ -6,48 +6,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Button } from "./ui/Button";
 import { SectionHeader } from "./SectionHeader";
+import { BOOKING_PACKAGES, formatAud } from "@/lib/booking";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
-
-const packages = [
-  {
-    name: "Focus",
-    includes: "1 × 30min one-on-one videography session",
-    duration: "30 mins",
-    price: "AU$229",
-  },
-  {
-    name: "Flex",
-    includes: "1 × 45min one-on-one videography session",
-    duration: "1 hr",
-    price: "AU$415",
-  },
-  {
-    name: "Motion",
-    includes: "1 × 60min one-on-one videography session",
-    duration: "1 hr",
-    price: "AU$775",
-  },
-  {
-    name: "Social",
-    includes: "1 × 120min one-on-one photography session",
-    duration: "2 hr",
-    price: "AU$1,033",
-  },
-  {
-    name: "Gallery",
-    includes: "1 × 60min one-on-one photography session",
-    duration: "1 hr",
-    price: "AU$465",
-  },
-  {
-    name: "Studio",
-    includes:
-      "2 hours exclusive studio hire · 50 × premium edited action shots",
-    duration: "2 hr",
-    price: "AU$1,495",
-  },
-] as const;
 
 export function Packages() {
   const root = useRef<HTMLElement>(null);
@@ -103,9 +64,9 @@ export function Packages() {
         </div>
 
         <div className="packages-grid grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {packages.map((item) => (
+          {BOOKING_PACKAGES.map((item) => (
             <article
-              key={item.name}
+              key={item.id}
               className="packages-card flex flex-col justify-between gap-10 rounded-2xl border border-white/20 p-6 md:p-8"
             >
               <div className="flex flex-col gap-5">
@@ -122,15 +83,15 @@ export function Packages() {
                 </div>
                 <div className="flex items-end justify-between gap-4 border-t border-white/15 pt-5">
                   <p className="text-sm font-medium text-white/50">
-                    {item.duration}
+                    {item.durationLabel}
                   </p>
                   <p className="text-xl font-bold text-white md:text-2xl">
-                    {item.price}
+                    {formatAud(item.price)}
                   </p>
                 </div>
               </div>
               <div>
-                <Button href="/contact" variant="outline">
+                <Button href={`/book/addons?package=${item.id}`} variant="outline">
                   Select
                 </Button>
               </div>
