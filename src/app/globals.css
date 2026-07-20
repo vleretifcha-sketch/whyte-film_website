@@ -75,23 +75,9 @@
   font-family: var(--font-display);
 }
 
-/* —— Site intro loader —— */
-html.is-site-loading,
-html.is-site-loading body {
-  overflow: hidden;
-}
-
-.site-loader {
+/* —— Circular reveal mask (loader + page transitions) —— */
+.circle-reveal-mask {
   --reveal: 0px;
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #010101;
-  padding: var(--pad);
-  /* Growing porthole: transparent hole expands from center */
   -webkit-mask-image: radial-gradient(
     circle at 50% 50%,
     transparent 0,
@@ -104,6 +90,38 @@ html.is-site-loading body {
     transparent var(--reveal),
     #000 calc(var(--reveal) + 1px)
   );
+}
+
+html.is-site-loading,
+html.is-site-loading body,
+html.is-page-transitioning,
+html.is-page-transitioning body {
+  overflow: hidden;
+}
+
+.site-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #010101;
+  padding: var(--pad);
+}
+
+.page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: #010101;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.page-transition.is-active {
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .site-loader__row {

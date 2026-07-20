@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { BookingNextBar } from "@/components/booking/BookingNextBar";
 import { BookingStepper } from "@/components/booking/BookingStepper";
 import { PackageSummaryCard } from "@/components/booking/PackageSummaryCard";
+import { usePageTransition } from "@/components/PageTransition";
 import { useBookingState } from "@/hooks/useBookingState";
 import {
   BOOKING_ADDONS,
@@ -18,6 +19,7 @@ import {
 
 export function AddonsStep() {
   const router = useRouter();
+  const { navigate } = usePageTransition();
   const searchParams = useSearchParams();
   const { state, ready, setPackage, toggleAddon } = useBookingState();
 
@@ -62,7 +64,7 @@ export function AddonsStep() {
               <BookingNextBar
                 durationLabel={pkg.durationLabel}
                 subtotalLabel={formatAud(subtotal)}
-                onNext={() => router.push("/book/time")}
+                onNext={() => navigate("/book/time")}
               />
             </div>
           </div>
@@ -137,7 +139,7 @@ export function AddonsStep() {
         <BookingNextBar
           durationLabel={pkg.durationLabel}
           subtotalLabel={formatAud(subtotal)}
-          onNext={() => router.push("/book/time")}
+          onNext={() => navigate("/book/time")}
         />
       </div>
     </section>

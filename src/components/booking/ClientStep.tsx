@@ -5,6 +5,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { BookingStepper } from "@/components/booking/BookingStepper";
+import { usePageTransition } from "@/components/PageTransition";
 import { useBookingState } from "@/hooks/useBookingState";
 import {
   BOOKING_ADDONS,
@@ -30,6 +31,7 @@ const HEAR_OPTIONS = [
 
 export function ClientStep() {
   const router = useRouter();
+  const { navigate } = usePageTransition();
   const { state, ready, clearBooking } = useBookingState();
   const [submitted, setSubmitted] = useState(false);
   const [agreeWhyte, setAgreeWhyte] = useState(false);
@@ -86,7 +88,7 @@ export function ClientStep() {
             Your {pkg.name} package request has been received. Our team will
             confirm availability shortly.
           </p>
-          <ActionButton onClick={() => router.push("/")}>
+          <ActionButton onClick={() => navigate("/")}>
             Back to home
           </ActionButton>
         </div>

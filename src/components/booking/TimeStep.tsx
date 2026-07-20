@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { BookingNextBar } from "@/components/booking/BookingNextBar";
 import { BookingStepper } from "@/components/booking/BookingStepper";
 import { PackageSummaryCard } from "@/components/booking/PackageSummaryCard";
+import { usePageTransition } from "@/components/PageTransition";
 import { useBookingState } from "@/hooks/useBookingState";
 import {
   BOOKING_ADDONS,
@@ -44,6 +45,7 @@ function buildCalendarDays(year: number, month: number) {
 
 export function TimeStep() {
   const router = useRouter();
+  const { navigate } = usePageTransition();
   const { state, ready, update } = useBookingState();
   const now = new Date();
   const [viewYear, setViewYear] = useState(now.getFullYear());
@@ -101,7 +103,7 @@ export function TimeStep() {
                 durationLabel={pkg.durationLabel}
                 subtotalLabel={formatAud(subtotal)}
                 disabled={!canContinue}
-                onNext={() => router.push("/book/client")}
+                onNext={() => navigate("/book/client")}
               />
             </div>
           </div>
@@ -224,7 +226,7 @@ export function TimeStep() {
           durationLabel={pkg.durationLabel}
           subtotalLabel={formatAud(subtotal)}
           disabled={!canContinue}
-          onNext={() => router.push("/book/client")}
+          onNext={() => navigate("/book/client")}
         />
       </div>
     </section>

@@ -99,7 +99,7 @@ export function SiteLoader() {
   return (
     <div
       ref={rootRef}
-      className="site-loader"
+      className="site-loader circle-reveal-mask"
       role="status"
       aria-live="polite"
       aria-busy="true"
