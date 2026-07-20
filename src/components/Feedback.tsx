@@ -5,6 +5,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { SectionHeader } from "./SectionHeader";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -51,10 +52,11 @@ export function Feedback() {
       className="bg-white px-[var(--pad)] py-[var(--section-y)] text-[#010101]"
     >
       <div className="mx-auto flex max-w-[1408px] flex-col gap-10">
-        <div className="flex items-center justify-between border-b border-[#010101] pb-6 text-base font-bold">
-          <span>CLIENTS FEEDBACKS</span>
-          <span>2023 - 2026</span>
-        </div>
+        <SectionHeader
+          left="CLIENTS FEEDBACKS"
+          right="2023 - 2026"
+          className="!border-[#010101] !text-[#010101]"
+        />
 
         <div className="grid gap-4 lg:grid-cols-[1fr_1fr_minmax(0,1.2fr)]">
           {testimonials.map((item) => (

@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Button } from "./ui/Button";
+import { SectionHeader } from "./SectionHeader";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -135,10 +136,7 @@ export function Services() {
       className="bg-[#010101] px-[var(--pad)] py-10 md:py-14"
     >
       <div className="mx-auto flex w-full max-w-[1408px] flex-col gap-10 md:gap-14">
-        <div className="flex items-center justify-between border-b border-white pb-6 text-base font-bold text-white">
-          <span>SERVICES</span>
-          <span>©2023</span>
-        </div>
+        <SectionHeader left="SERVICES" />
 
         <div className="flex flex-col items-start gap-10 lg:flex-row lg:gap-4">
           <div className="flex w-full max-w-[697px] flex-col self-start lg:sticky lg:top-24 lg:max-h-[calc(100svh-6rem)]">

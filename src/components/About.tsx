@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Button } from "./ui/Button";
+import { SectionHeader } from "./SectionHeader";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -121,20 +122,19 @@ export function About() {
     >
       <div className="mx-auto grid max-w-[1408px] items-center gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,554px)] lg:gap-[clamp(2rem,8vw,10rem)]">
         <div className="flex flex-col gap-16 lg:gap-64">
-          <div className="about-reveal flex flex-col gap-10">
-            <div className="flex items-center justify-between border-b border-white pb-6 text-base font-bold text-white">
-              <span>ABOUT US</span>
-              <span>©2023</span>
-            </div>
-            <p className="max-w-[697px] text-[clamp(1.25rem,2.5vw,2rem)] font-normal leading-[1.5] tracking-[-0.02em] text-white">
-              Established in 2023, Whyte Films is a creative media agency built
-              for the fitness industry. We produce premium content that grows
-              and enhances the presence of athletes, influencers and brands.
-            </p>
-            <div>
-              <Button href="#work" variant="outline">
-                View our work
-              </Button>
+          <div className="flex flex-col gap-10">
+            <SectionHeader left="ABOUT US" />
+            <div className="about-reveal flex flex-col gap-10">
+              <p className="max-w-[697px] text-[clamp(1.25rem,2.5vw,2rem)] font-normal leading-[1.5] tracking-[-0.02em] text-white">
+                Established in 2023, Whyte Films is a creative media agency built
+                for the fitness industry. We produce premium content that grows
+                and enhances the presence of athletes, influencers and brands.
+              </p>
+              <div>
+                <Button href="#work" variant="outline">
+                  View our work
+                </Button>
+              </div>
             </div>
           </div>
 
