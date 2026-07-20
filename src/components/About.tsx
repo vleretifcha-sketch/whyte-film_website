@@ -131,7 +131,7 @@ export function About() {
                 and enhances the presence of athletes, influencers and brands.
               </p>
               <div>
-                <Button href="#work" variant="outline">
+                <Button href="/work" variant="outline">
                   View our work
                 </Button>
               </div>

@@ -181,7 +181,7 @@ export function Services() {
                 {current.description}
               </p>
               <div>
-                <Button href="#contact" variant="outline">
+                <Button href="/packages" variant="outline">
                   Book Now
                 </Button>
               </div>

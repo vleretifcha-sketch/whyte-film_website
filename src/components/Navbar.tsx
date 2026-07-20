@@ -1,27 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ProgressiveBlur } from "./NavProgressiveBlur";
 import { ButtonLabel } from "./ui/Button";
-
-const links = [
-  { href: "#home", label: "Home" },
-  { href: "#services", label: "Services" },
-  { href: "#work", label: "Work" },
-  { href: "#about", label: "About" },
-];
+import { navLinks } from "@/lib/nav";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-50 -mb-[60px] overflow-visible">
-      {/* Blur must live INSIDE sticky header so it samples scrolling content */}
       <ProgressiveBlur edge="top" />
 
       <div className="relative z-[70] mx-auto flex h-[60px] max-w-[1728px] items-center justify-between px-[var(--pad)]">
-        <Link href="#home" aria-label="Whyte Films home" className="inline-flex">
+        <Link href="/" aria-label="Whyte Films home" className="inline-flex">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/assets/logo-nav.svg"
@@ -33,17 +28,25 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="nav-link text-base font-medium text-white"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const active =
+              link.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`nav-link text-base font-medium text-white ${
+                  active ? "opacity-100" : "opacity-80"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
           <Link
-            href="#contact"
+            href="/contact"
             className="btn btn-secondary inline-flex h-10 items-center justify-center overflow-hidden rounded-2xl !border !border-solid !border-white !bg-transparent px-4 text-sm font-medium !text-white"
           >
             <ButtonLabel>Contact</ButtonLabel>
@@ -87,7 +90,7 @@ export function Navbar() {
             aria-hidden
           />
           <div className="relative z-10 flex flex-col gap-4 px-[var(--pad)] pb-8 pt-4">
-            {links.map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -98,7 +101,7 @@ export function Navbar() {
               </Link>
             ))}
             <Link
-              href="#contact"
+              href="/contact"
               className="btn btn-secondary mt-2 inline-flex h-10 w-fit items-center justify-center overflow-hidden rounded-2xl !border !border-solid !border-white !bg-transparent px-4 text-sm font-medium !text-white"
               onClick={() => setOpen(false)}
             >

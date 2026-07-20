@@ -4,14 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { FormEvent } from "react";
 import { ButtonLabel } from "./ui/Button";
-
-const pages = [
-  { href: "#home", label: "Home" },
-  { href: "#about", label: "About us" },
-  { href: "#work", label: "Works" },
-  { href: "#services", label: "Services" },
-  { href: "#contact", label: "Contact" },
-];
+import { footerLinks } from "@/lib/nav";
 
 const socials = [
   { href: "https://instagram.com", label: "Instagram" },
@@ -41,7 +34,7 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-12 py-14 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8 lg:py-20">
           <div className="flex max-w-[320px] flex-col">
             <Link
-              href="#home"
+              href="/"
               aria-label="Whyte Films home"
               className="inline-flex transition-opacity hover:opacity-70"
             >
@@ -100,7 +93,7 @@ export function Footer() {
                 Pages
               </p>
               <nav className="flex flex-col gap-2" aria-label="Footer pages">
-                {pages.map((link) => (
+                {footerLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}

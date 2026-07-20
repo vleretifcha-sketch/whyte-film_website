@@ -11,7 +11,7 @@ export function Marquee() {
       <div className="marquee-track flex items-center gap-10 whitespace-nowrap">
         {sequence.map((word, i) => (
           <div key={`${word}-${i}`} className="flex items-center gap-10">
-            <span className="text-[clamp(2.5rem,6vw,4rem)] font-medium text-white">
+            <span className="font-display text-[clamp(2.5rem,6vw,4rem)] font-medium text-white">
               {word}
             </span>
             <span

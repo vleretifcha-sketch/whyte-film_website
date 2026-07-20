@@ -246,7 +246,7 @@ export function Hero() {
               </p>
             </div>
             <div className="hero-copy-block">
-              <Button href="#contact">Book Now</Button>
+              <Button href="/packages">Book Now</Button>
             </div>
           </div>
 
@@ -277,7 +277,7 @@ export function Hero() {
             </div>
             <div className="flex shrink-0 flex-col items-end justify-between">
               <a
-                href="#about"
+                href="/about"
                 className="flex size-12 items-center justify-center rounded-xl !bg-white !text-[#010101] transition-transform hover:scale-105"
                 aria-label={`About ${member.name}`}
               >

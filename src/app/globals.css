@@ -1,5 +1,53 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Clash Grotesk";
+  src: url("/fonts/clash-grotesk/ClashGrotesk-Extralight.woff") format("woff");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Grotesk";
+  src: url("/fonts/clash-grotesk/ClashGrotesk-Light.woff") format("woff");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Grotesk";
+  src: url("/fonts/clash-grotesk/ClashGrotesk-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Grotesk";
+  src: url("/fonts/clash-grotesk/ClashGrotesk-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Grotesk";
+  src: url("/fonts/clash-grotesk/ClashGrotesk-Semibold.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Grotesk";
+  src: url("/fonts/clash-grotesk/ClashGrotesk-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #010101;
   --bg-elevated: #1e1e1e;
@@ -12,6 +60,7 @@
   --pad: clamp(1.25rem, 4vw, 10rem);
   --section-y: clamp(5rem, 12vw, 12rem);
   --font: "Satoshi", "Segoe UI", sans-serif;
+  --font-display: "Clash Grotesk", "Satoshi", sans-serif;
 }
 
 @theme inline {
@@ -20,6 +69,10 @@
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --font-sans: var(--font);
+}
+
+.font-display {
+  font-family: var(--font-display);
 }
 
 * {

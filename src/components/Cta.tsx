@@ -104,8 +104,8 @@ export function Cta() {
         performance.
       </p>
       <div className="cta-rest flex flex-wrap items-center justify-center gap-4">
-        <Button href="mailto:hello@whytefilms.com.au">Book Now</Button>
-        <Button href="#work" variant="outline">
+        <Button href="/packages">Book Now</Button>
+        <Button href="/work" variant="outline">
           View our work
         </Button>
       </div>
