@@ -11,7 +11,7 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const testimonials = [
   {
-    name: "Emma Sparke",
+    name: "Kristen Ellis",
     brand: "Elite Supps",
     photo: "/assets/feedback-1.jpg",
     quote:
