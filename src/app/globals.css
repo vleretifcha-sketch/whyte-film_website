@@ -75,9 +75,36 @@
   font-family: var(--font-display);
 }
 
+/* Site-wide custom circle cursor — 40×40 */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 1.5px solid #fff;
+  border-radius: 9999px;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: difference;
+  will-change: transform;
+}
+
+.custom-cursor.is-visible {
+  opacity: 1;
+}
+
 /* Hero wordmark: solid black flashlight under cursor */
 .hero-wordmark {
   --spot: 0px;
+  --cursor-size: clamp(5rem, 18vw, 11rem);
 }
 
 /* Punch out white under the spot to avoid fringe */
@@ -126,7 +153,7 @@
 }
 
 .hero-wordmark.is-lit {
-  --spot: clamp(5rem, 18vw, 11rem);
+  --spot: var(--cursor-size);
 }
 
 .hero-wordmark.is-lit .hero-wordmark__fill {
@@ -513,6 +540,15 @@ button {
   .hero-wordmark.is-lit .hero-wordmark__fill {
     --spot: 0px;
     opacity: 0;
+  }
+
+  .custom-cursor {
+    display: none;
+  }
+
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: auto !important;
   }
 
   html {
