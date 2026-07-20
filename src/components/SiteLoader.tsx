@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(useGSAP);
 
 const MIN_MS = 4500;
-const EXIT_MS = 550;
 const STORAGE_KEY = "whyte-films-loaded";
 
 function shouldSkipLoader() {
@@ -13,70 +16,100 @@ function shouldSkipLoader() {
 }
 
 export function SiteLoader() {
-  const [phase, setPhase] = useState<"loading" | "exiting" | "done">("loading");
-  const [progress, setProgress] = useState(0);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const rowRef = useRef<HTMLDivElement>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const percentRef = useRef<HTMLSpanElement>(null);
+  const [done, setDone] = useState(false);
 
   useLayoutEffect(() => {
     if (shouldSkipLoader()) {
-      setPhase("done");
+      setDone(true);
       return;
     }
     document.documentElement.classList.add("is-site-loading");
   }, []);
 
-  useEffect(() => {
-    if (shouldSkipLoader()) return;
+  useGSAP(
+    () => {
+      if (shouldSkipLoader()) return;
 
-    const started = performance.now();
-    let frame = 0;
-    let exitTimer = 0;
+      const root = rootRef.current;
+      const row = rowRef.current;
+      const bar = progressBarRef.current;
+      const percent = percentRef.current;
+      if (!root || !row || !bar || !percent) return;
 
-    const tick = (now: number) => {
-      const elapsed = now - started;
-      const t = Math.min(elapsed / MIN_MS, 1);
-      const eased = 1 - (1 - t) ** 2.4;
-      setProgress(Math.round(eased * 100));
+      const state = { p: 0, reveal: 0 };
+      const maxHole = () =>
+        Math.hypot(window.innerWidth, window.innerHeight) * 0.55;
 
-      if (t < 1) {
-        frame = requestAnimationFrame(tick);
-        return;
-      }
+      root.style.setProperty("--reveal", "0px");
+      gsap.set(bar, { width: "0%" });
 
-      sessionStorage.setItem(STORAGE_KEY, "1");
-      setPhase("exiting");
-      exitTimer = window.setTimeout(() => {
-        setPhase("done");
+      const tl = gsap.timeline({
+        onComplete: () => {
+          sessionStorage.setItem(STORAGE_KEY, "1");
+          document.documentElement.classList.remove("is-site-loading");
+          setDone(true);
+        },
+      });
+
+      tl.to(state, {
+        p: 100,
+        duration: MIN_MS / 1000,
+        ease: "power2.out",
+        onUpdate: () => {
+          const value = Math.round(state.p);
+          bar.style.width = `${value}%`;
+          percent.textContent = `${value}%`;
+        },
+      })
+        .to(
+          row,
+          {
+            opacity: 0,
+            duration: 0.35,
+            ease: "power2.in",
+          },
+          "+=0.05",
+        )
+        .to(
+          state,
+          {
+            reveal: maxHole(),
+            duration: 1.15,
+            ease: "power3.inOut",
+            onUpdate: () => {
+              root.style.setProperty("--reveal", `${state.reveal}px`);
+            },
+          },
+          "-=0.1",
+        );
+
+      return () => {
         document.documentElement.classList.remove("is-site-loading");
-      }, EXIT_MS);
-    };
+      };
+    },
+    { scope: rootRef },
+  );
 
-    frame = requestAnimationFrame(tick);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      window.clearTimeout(exitTimer);
-      document.documentElement.classList.remove("is-site-loading");
-    };
-  }, []);
-
-  if (phase === "done") return null;
+  if (done) return null;
 
   return (
     <div
-      className={`site-loader${phase === "exiting" ? " is-exiting" : ""}`}
+      ref={rootRef}
+      className="site-loader"
       role="status"
       aria-live="polite"
-      aria-busy={phase === "loading"}
+      aria-busy="true"
     >
-      <div className="site-loader__row">
+      <div ref={rowRef} className="site-loader__row">
         <div className="site-loader__line">
           <div className="site-loader__dots" aria-hidden />
-          <div
-            className="site-loader__progress"
-            style={{ width: `${progress}%` }}
-          />
+          <div ref={progressBarRef} className="site-loader__progress" />
           <p className="site-loader__label">
-            Loading <span>{progress}%</span>
+            Loading <span ref={percentRef}>0%</span>
           </p>
         </div>
 

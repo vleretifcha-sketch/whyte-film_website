@@ -82,6 +82,7 @@ html.is-site-loading body {
 }
 
 .site-loader {
+  --reveal: 0px;
   position: fixed;
   inset: 0;
   z-index: 10000;
@@ -90,18 +91,19 @@ html.is-site-loading body {
   justify-content: center;
   background: #010101;
   padding: var(--pad);
-  opacity: 1;
-}
-
-.site-loader.is-exiting {
-  animation: site-loader-out 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  pointer-events: none;
-}
-
-@keyframes site-loader-out {
-  to {
-    opacity: 0;
-  }
+  /* Growing porthole: transparent hole expands from center */
+  -webkit-mask-image: radial-gradient(
+    circle at 50% 50%,
+    transparent 0,
+    transparent var(--reveal),
+    #000 calc(var(--reveal) + 1px)
+  );
+  mask-image: radial-gradient(
+    circle at 50% 50%,
+    transparent 0,
+    transparent var(--reveal),
+    #000 calc(var(--reveal) + 1px)
+  );
 }
 
 .site-loader__row {
@@ -212,7 +214,6 @@ html.is-site-loading body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .site-loader,
   .site-loader__rec-glow,
   .site-loader__rec-dot {
     animation: none;
