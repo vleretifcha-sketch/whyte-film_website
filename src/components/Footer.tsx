@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { FormEvent } from "react";
+import { ButtonLabel } from "./ui/Button";
 
 const pages = [
   { href: "#home", label: "Home" },
@@ -84,9 +85,9 @@ export function Footer() {
                 />
                 <button
                   type="submit"
-                  className="btn-secondary inline-flex h-12 shrink-0 items-center justify-center rounded-2xl !border !border-solid !border-white !bg-transparent px-4 text-base font-bold !text-white transition-colors"
+                  className="btn btn-secondary inline-flex h-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl !border !border-solid !border-white !bg-transparent px-4 text-base font-bold !text-white"
                 >
-                  Subscribe
+                  <ButtonLabel>Subscribe</ButtonLabel>
                 </button>
               </form>
             </div>

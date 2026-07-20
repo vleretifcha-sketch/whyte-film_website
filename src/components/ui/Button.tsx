@@ -3,20 +3,30 @@ import Link from "next/link";
 type Variant = "solid" | "outline" | "outline-dark";
 
 const styles: Record<Variant, string> = {
-  solid:
-    "bg-white !text-[#010101] hover:bg-white/90 hover:!text-[#010101]",
-  outline:
-    "btn-secondary border border-white text-white hover:bg-white",
+  solid: "bg-white !text-[#010101] hover:!text-[#010101]",
+  outline: "btn-secondary !border !border-solid !border-white !bg-transparent !text-white",
   "outline-dark":
-    "border border-[#010101] text-[#010101] hover:bg-[#010101] hover:text-white",
+    "btn-secondary-dark !border !border-solid !border-[#010101] !bg-transparent !text-[#010101]",
 };
 
 type Props = {
   href: string;
-  children: React.ReactNode;
+  children: string;
   variant?: Variant;
   className?: string;
 };
+
+/** Label that rolls bottom→top on hover */
+export function ButtonLabel({ children }: { children: string }) {
+  return (
+    <span className="btn-roll">
+      <span className="btn-roll__line">{children}</span>
+      <span className="btn-roll__line" aria-hidden>
+        {children}
+      </span>
+    </span>
+  );
+}
 
 export function Button({
   href,
@@ -27,9 +37,9 @@ export function Button({
   return (
     <Link
       href={href}
-      className={`inline-flex h-12 items-center justify-center rounded-2xl px-4 text-base font-bold transition-colors ${styles[variant]} ${className}`}
+      className={`btn inline-flex h-12 items-center justify-center overflow-hidden rounded-2xl px-4 text-base font-bold ${styles[variant]} ${className}`}
     >
-      {children}
+      <ButtonLabel>{children}</ButtonLabel>
     </Link>
   );
 }

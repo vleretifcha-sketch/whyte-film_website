@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ProgressiveBlur } from "./NavProgressiveBlur";
+import { ButtonLabel } from "./ui/Button";
 
 const links = [
   { href: "#home", label: "Home" },
@@ -43,9 +44,9 @@ export function Navbar() {
           ))}
           <Link
             href="#contact"
-            className="btn-secondary inline-flex h-10 items-center justify-center rounded-2xl !border !border-solid !border-white !bg-transparent px-4 text-sm font-medium !text-white transition-colors"
+            className="btn btn-secondary inline-flex h-10 items-center justify-center overflow-hidden rounded-2xl !border !border-solid !border-white !bg-transparent px-4 text-sm font-medium !text-white"
           >
-            Contact
+            <ButtonLabel>Contact</ButtonLabel>
           </Link>
         </nav>
 
@@ -98,10 +99,10 @@ export function Navbar() {
             ))}
             <Link
               href="#contact"
-              className="btn-secondary mt-2 inline-flex h-10 w-fit items-center justify-center rounded-2xl border border-white px-4 text-sm font-medium text-white transition-colors"
+              className="btn btn-secondary mt-2 inline-flex h-10 w-fit items-center justify-center overflow-hidden rounded-2xl !border !border-solid !border-white !bg-transparent px-4 text-sm font-medium !text-white"
               onClick={() => setOpen(false)}
             >
-              Contact
+              <ButtonLabel>Contact</ButtonLabel>
             </Link>
           </div>
         </nav>

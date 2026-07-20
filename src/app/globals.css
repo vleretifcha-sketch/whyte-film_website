@@ -60,6 +60,60 @@ a {
   color: #010101 !important;
 }
 
+.btn-secondary-dark:hover,
+.btn-secondary-dark:focus-visible {
+  background-color: #010101;
+  color: #ffffff !important;
+}
+
+/* Button label roll — bottom → top on hover */
+.btn-roll {
+  display: grid;
+  overflow: hidden;
+  line-height: 1.2;
+}
+
+.btn-roll__line {
+  grid-area: 1 / 1;
+  display: block;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.btn-roll__line:first-child {
+  transform: translateY(0);
+}
+
+.btn-roll__line:last-child {
+  transform: translateY(115%);
+}
+
+.btn:hover .btn-roll__line:first-child,
+.btn:focus-visible .btn-roll__line:first-child {
+  transform: translateY(-115%);
+}
+
+.btn:hover .btn-roll__line:last-child,
+.btn:focus-visible .btn-roll__line:last-child {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-roll__line {
+    transition: none;
+  }
+
+  .btn:hover .btn-roll__line:first-child,
+  .btn:focus-visible .btn-roll__line:first-child {
+    transform: none;
+  }
+
+  .btn:hover .btn-roll__line:last-child,
+  .btn:focus-visible .btn-roll__line:last-child {
+    transform: none;
+    opacity: 0;
+  }
+}
+
 /* Nav labels — underline draws L→R on hover */
 .nav-link {
   position: relative;
