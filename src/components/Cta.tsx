@@ -99,9 +99,9 @@ export function Cta() {
         ))}
       </h2>
       <p className="cta-rest max-w-[554px] text-lg font-normal text-[#8e8e8e]">
-        Every brand has a story. We bring yours to life through powerful visuals
-        that capture the passion, discipline and emotion behind every
-        performance.
+        Every brand and athlete has a story. We bring yours to life through
+        powerful visuals that capture the passion, discipline and emotion
+        behind every performance.
       </p>
       <div className="cta-rest flex flex-wrap items-center justify-center gap-4">
         <Button href="/packages">Book Now</Button>

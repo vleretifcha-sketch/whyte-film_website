@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { Feedback } from "@/components/Feedback";
-import { Partners } from "@/components/Partners";
+import { WorkGallery } from "@/components/WorkGallery";
+import { Cta } from "@/components/Cta";
 
 export const metadata: Metadata = {
   title: "Work — Whyte Films",
@@ -9,9 +9,8 @@ export const metadata: Metadata = {
 export default function WorkPage() {
   return (
     <>
-      <div className="pt-20" />
-      <Feedback />
-      <Partners />
+      <WorkGallery />
+      <Cta />
     </>
   );
 }

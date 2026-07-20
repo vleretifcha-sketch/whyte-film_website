@@ -48,7 +48,7 @@ export function Footer() {
               />
             </Link>
             <p className="mt-6 text-sm leading-relaxed text-white/60 md:text-base">
-              Every brand, every athletes have a story. We bring yours to life
+              Every brand and athlete has a story. We bring yours to life
               through powerful visuals that capture the passion, discipline and
               emotion behind every performance.
             </p>

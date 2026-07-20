@@ -240,9 +240,9 @@ export function Hero() {
                 </span>
               </p>
               <p className="text-lg font-medium leading-normal text-white">
-                Every brand has a story. We bring yours to life through powerful
-                visuals that capture the passion, discipline and emotion behind
-                every performance.
+                Every brand and athlete has a story. We bring yours to life
+                through powerful visuals that capture the passion, discipline
+                and emotion behind every performance.
               </p>
             </div>
             <div className="hero-copy-block">

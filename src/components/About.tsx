@@ -27,7 +27,7 @@ const photos = [
   { src: "/assets/about-4.jpg", className: "left-[69%] top-0", strength: 22 },
 ];
 
-export function About() {
+export function About({ showHeader = true }: { showHeader?: boolean }) {
   const root = useRef<HTMLElement>(null);
   const collageRef = useRef<HTMLDivElement>(null);
 
@@ -123,7 +123,7 @@ export function About() {
       <div className="mx-auto grid max-w-[1408px] items-center gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,554px)] lg:gap-[clamp(2rem,8vw,10rem)]">
         <div className="flex flex-col gap-16 lg:gap-64">
           <div className="flex flex-col gap-10">
-            <SectionHeader left="ABOUT US" />
+            {showHeader ? <SectionHeader left="ABOUT US" /> : null}
             <div className="about-reveal flex flex-col gap-10">
               <p className="max-w-[697px] text-[clamp(1.25rem,2.5vw,2rem)] font-normal leading-[1.5] tracking-[-0.02em] text-white">
                 Established in 2023, Whyte Films is a creative media agency built
