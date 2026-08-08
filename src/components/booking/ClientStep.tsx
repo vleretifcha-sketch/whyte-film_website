@@ -234,7 +234,13 @@ export function ClientStep() {
                   className="mt-1"
                 />
                 <span>
-                  I agree with Whyte Films Terms &amp; Conditions{" "}
+                  I agree with Whyte Films{" "}
+                  <Link
+                    href="/terms"
+                    className="underline decoration-white/35 underline-offset-2 transition-colors hover:text-white hover:decoration-white"
+                  >
+                    Terms &amp; Conditions
+                  </Link>{" "}
                   <span className="text-white/40">*</span>
                 </span>
               </label>

@@ -26,10 +26,10 @@ const socials = [
 ];
 
 const metaLinks = [
+  { href: "/terms", label: "Terms & Conditions" },
   { href: "#", label: "Style Guide" },
   { href: "#", label: "Changelog" },
   { href: "#", label: "Licenses" },
-  { href: "#", label: "Instructions" },
 ];
 
 export function Footer() {

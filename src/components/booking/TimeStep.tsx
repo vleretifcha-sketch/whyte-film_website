@@ -15,6 +15,7 @@ import {
   formatSlotLabel,
   getPackage,
   isDateBookable,
+  isValidCustomTime,
   slotsForDate,
   toIsoDate,
 } from "@/lib/booking";
@@ -50,6 +51,8 @@ export function TimeStep() {
   const now = new Date();
   const [viewYear, setViewYear] = useState(now.getFullYear());
   const [viewMonth, setViewMonth] = useState(now.getMonth());
+  const [customMode, setCustomMode] = useState(false);
+  const [customTime, setCustomTime] = useState("10:00");
 
   useEffect(() => {
     if (!ready) return;
@@ -67,6 +70,19 @@ export function TimeStep() {
   const availableSlots = slotsForDate(state.date);
   const subtotal = bookingSubtotal(state);
 
+  useEffect(() => {
+    if (!state.time) {
+      setCustomMode(false);
+      return;
+    }
+    if (!availableSlots.includes(state.time)) {
+      setCustomMode(true);
+      setCustomTime(state.time);
+    } else {
+      setCustomMode(false);
+    }
+  }, [state.time, availableSlots]);
+
   if (!ready || !pkg) {
     return (
       <section className="bg-[#010101] px-[var(--pad)] pb-28 pt-24 md:pt-32">
@@ -81,7 +97,28 @@ export function TimeStep() {
     setViewMonth(next.getMonth());
   };
 
-  const canContinue = Boolean(state.date && state.time);
+  const selectPreset = (slot: string) => {
+    setCustomMode(false);
+    update({ time: slot });
+  };
+
+  const selectCustomMode = () => {
+    setCustomMode(true);
+    const next = isValidCustomTime(customTime) ? customTime : "10:00";
+    setCustomTime(next);
+    update({ time: next });
+  };
+
+  const onCustomTimeChange = (value: string) => {
+    setCustomTime(value);
+    if (isValidCustomTime(value)) update({ time: value });
+  };
+
+  const canContinue = Boolean(
+    state.date &&
+      state.time &&
+      (availableSlots.includes(state.time) || isValidCustomTime(state.time)),
+  );
 
   return (
     <section className="bg-[#010101] px-[var(--pad)] pb-28 pt-24 md:pb-32 md:pt-32">
@@ -133,11 +170,7 @@ export function TimeStep() {
               {WEEKDAYS.map((day, i) => (
                 <p
                   key={day}
-                  className={`text-[10px] font-bold uppercase tracking-[0.06em] sm:text-xs sm:tracking-[0.08em] ${
-                    day === "Sat" || day === "Sun"
-                      ? "text-white/35"
-                      : "text-white/55"
-                  }`}
+                  className="text-[10px] font-bold uppercase tracking-[0.06em] text-white/55 sm:text-xs sm:tracking-[0.08em]"
                 >
                   <span className="sm:hidden">{WEEKDAYS_SHORT[i]}</span>
                   <span className="hidden sm:inline">{day}</span>
@@ -156,7 +189,10 @@ export function TimeStep() {
                     type="button"
                     disabled={!bookable}
                     aria-pressed={selected}
-                    onClick={() => update({ date: iso, time: null })}
+                    onClick={() => {
+                      setCustomMode(false);
+                      update({ date: iso, time: null });
+                    }}
                     className={`book-day ${
                       selected
                         ? "book-day--selected"
@@ -192,28 +228,78 @@ export function TimeStep() {
                 <p className="text-sm text-white/50">
                   Select a date to see available times.
                 </p>
-              ) : availableSlots.length === 0 ? (
-                <p className="text-sm text-white/50">
-                  No times available on this date.
-                </p>
               ) : (
-                <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
-                  {availableSlots.map((slot) => {
-                    const selected = state.time === slot;
-                    return (
+                <div className="flex flex-col gap-4">
+                  {availableSlots.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
+                      {availableSlots.map((slot) => {
+                        const selected = !customMode && state.time === slot;
+                        return (
+                          <button
+                            key={slot}
+                            type="button"
+                            aria-pressed={selected}
+                            onClick={() => selectPreset(slot)}
+                            className={`book-slot w-full sm:w-auto ${
+                              selected ? "book-slot--selected" : ""
+                            }`}
+                          >
+                            {formatSlotLabel(slot)}
+                          </button>
+                        );
+                      })}
                       <button
-                        key={slot}
                         type="button"
-                        aria-pressed={selected}
-                        onClick={() => update({ time: slot })}
+                        aria-pressed={customMode}
+                        onClick={selectCustomMode}
                         className={`book-slot w-full sm:w-auto ${
-                          selected ? "book-slot--selected" : ""
+                          customMode ? "book-slot--selected" : ""
                         }`}
                       >
-                        {formatSlotLabel(slot)}
+                        Request custom time
                       </button>
-                    );
-                  })}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-sm text-white/50">
+                        No preset times listed — request a custom start time.
+                      </p>
+                      <button
+                        type="button"
+                        aria-pressed={customMode}
+                        onClick={selectCustomMode}
+                        className={`book-slot w-fit ${
+                          customMode ? "book-slot--selected" : ""
+                        }`}
+                      >
+                        Request custom time
+                      </button>
+                    </div>
+                  )}
+
+                  {customMode ? (
+                    <div className="flex flex-col gap-2 rounded-2xl border border-white/15 bg-white/[0.04] p-4">
+                      <label
+                        htmlFor="custom-start-time"
+                        className="text-sm font-medium text-white/70"
+                      >
+                        Preferred start time
+                      </label>
+                      <input
+                        id="custom-start-time"
+                        type="time"
+                        min="06:00"
+                        max="21:00"
+                        value={customTime}
+                        onChange={(e) => onCustomTimeChange(e.target.value)}
+                        className="h-12 w-full max-w-[220px] rounded-2xl border border-white/25 bg-transparent px-4 text-sm text-white outline-none transition-colors focus:border-white [color-scheme:dark]"
+                      />
+                      <p className="text-xs leading-relaxed text-white/45">
+                        We’ll confirm this custom time request by email —
+                        Sundays are available.
+                      </p>
+                    </div>
+                  ) : null}
                 </div>
               )}
             </div>

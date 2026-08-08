@@ -1,132 +1,90 @@
 "use client";
 
-import type { ReactNode } from "react";
+import Image from "next/image";
 import { SectionHeader } from "./SectionHeader";
 
 const PARTNERS = [
   {
-    id: "apex-fuel",
-    name: "Apex Fuel",
-    logo: (
-      <svg viewBox="0 0 160 48" fill="none" aria-hidden className="h-10 w-auto md:h-12">
-        <path
-          d="M8 36L24 8h12l16 28h-12l-2.5-4.5H22.5L20 36H8zm18.5-12h9.2L31 14.5 26.5 24z"
-          fill="currentColor"
-        />
-        <path d="M58 8h10v28H58V8z" fill="currentColor" />
-        <path
-          d="M78 36V8h14c8 0 13 4.5 13 11.5S100 31 92 31h-4v5H78zm10-13h3.5c3.2 0 5-1.6 5-4s-1.8-4-5-4H88v8z"
-          fill="currentColor"
-        />
-        <path
-          d="M114 36V8h10v11h.3L136 8h12l-14 14 15 14h-13l-11.5-11H124v11h-10z"
-          fill="currentColor"
-        />
-      </svg>
-    ),
+    id: "primabolics",
+    name: "Primabolics",
+    src: "/assets/partners/primabolics.png",
+    width: 300,
+    height: 23,
   },
   {
-    id: "ironform",
-    name: "Ironform",
-    logo: (
-      <svg viewBox="0 0 180 48" fill="none" aria-hidden className="h-9 w-auto md:h-11">
-        <circle cx="18" cy="24" r="10" stroke="currentColor" strokeWidth="2.5" />
-        <path d="M12 24h12M18 18v12" stroke="currentColor" strokeWidth="2.5" />
-        <text
-          x="38"
-          y="31"
-          fill="currentColor"
-          fontFamily="Satoshi, Segoe UI, sans-serif"
-          fontSize="20"
-          fontWeight="700"
-          letterSpacing="0.12em"
-        >
-          IRONFORM
-        </text>
-      </svg>
-    ),
+    id: "greenstreat",
+    name: "Greenstreat",
+    src: "/assets/partners/greenstreat.png",
+    width: 300,
+    height: 83,
   },
   {
-    id: "pulse-lab",
-    name: "Pulse Lab",
-    logo: (
-      <svg viewBox="0 0 170 48" fill="none" aria-hidden className="h-10 w-auto md:h-12">
-        <path
-          d="M6 28h18l6-16 8 32 8-20 5 10h23"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <text
-          x="78"
-          y="32"
-          fill="currentColor"
-          fontFamily="Satoshi, Segoe UI, sans-serif"
-          fontSize="18"
-          fontWeight="700"
-          letterSpacing="0.08em"
-        >
-          PULSE
-        </text>
-      </svg>
-    ),
+    id: "ignite",
+    name: "Ignite",
+    src: "/assets/partners/ignite.png",
+    width: 300,
+    height: 115,
   },
   {
-    id: "northgrip",
-    name: "Northgrip",
-    logo: (
-      <svg viewBox="0 0 170 48" fill="none" aria-hidden className="h-10 w-auto md:h-12">
-        <path d="M14 36V12l16 24V12" stroke="currentColor" strokeWidth="3" strokeLinejoin="round" />
-        <text
-          x="42"
-          y="31"
-          fill="currentColor"
-          fontFamily="Satoshi, Segoe UI, sans-serif"
-          fontSize="18"
-          fontWeight="600"
-          letterSpacing="0.16em"
-        >
-          NORTHGRIP
-        </text>
-      </svg>
-    ),
+    id: "musclenation",
+    name: "Muscle Nation",
+    src: "/assets/partners/musclenation.png",
+    width: 300,
+    height: 52,
   },
   {
-    id: "voltwear",
-    name: "Voltwear",
-    logo: (
-      <svg viewBox="0 0 160 48" fill="none" aria-hidden className="h-10 w-auto md:h-12">
-        <path d="M22 8L10 26h12l-4 14 18-22H24l4-10H22z" fill="currentColor" />
-        <text
-          x="42"
-          y="31"
-          fill="currentColor"
-          fontFamily="Satoshi, Segoe UI, sans-serif"
-          fontSize="18"
-          fontWeight="700"
-          letterSpacing="0.1em"
-        >
-          VOLTWEAR
-        </text>
-      </svg>
-    ),
+    id: "elite-supplements",
+    name: "Elite Supplements",
+    src: "/assets/partners/elite-supplements.png",
+    width: 300,
+    height: 59,
+  },
+  {
+    id: "dayone",
+    name: "Day One",
+    src: "/assets/partners/dayone.png",
+    width: 300,
+    height: 44,
+  },
+  {
+    id: "anytime-fitness",
+    name: "Anytime Fitness",
+    src: "/assets/partners/anytime-fitness.png",
+    width: 300,
+    height: 81,
+  },
+  {
+    id: "heavyset-gym",
+    name: "Heavyset Gym",
+    src: "/assets/partners/heavyset-gym.png",
+    width: 150,
+    height: 150,
   },
 ] as const;
 
 function PartnerSlot({
   name,
-  logo,
+  src,
+  width,
+  height,
 }: {
   name: string;
-  logo: ReactNode;
+  src: string;
+  width: number;
+  height: number;
 }) {
   return (
     <div
-      className="flex h-[120px] w-[min(42vw,260px)] shrink-0 items-center justify-center rounded-2xl bg-[#1e1e1e] text-white/85 md:h-[154px] md:w-[280px]"
+      className="flex h-[120px] w-[min(42vw,260px)] shrink-0 items-center justify-center rounded-2xl bg-[#1e1e1e] px-6 md:h-[154px] md:w-[280px] md:px-8"
       aria-label={name}
     >
-      {logo}
+      <Image
+        src={src}
+        alt={name}
+        width={width}
+        height={height}
+        className="h-auto max-h-12 w-auto max-w-full object-contain md:max-h-14"
+      />
     </div>
   );
 }
@@ -152,7 +110,9 @@ export function Partners() {
             <PartnerSlot
               key={`${partner.id}-${i}`}
               name={partner.name}
-              logo={partner.logo}
+              src={partner.src}
+              width={partner.width}
+              height={partner.height}
             />
           ))}
         </div>

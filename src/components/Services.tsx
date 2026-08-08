@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -15,45 +15,90 @@ const services = [
     name: "PHOTOGRAPHY",
     description:
       "Cinematic stills that capture physique, product and brand energy — crafted for campaigns, socials and packaging.",
-    image: "/assets/about-4.jpg",
+    image: "/assets/service-photography.jpg",
   },
   {
     name: "VIDEOS",
     description:
       "High-impact film for launches, athlete stories and brand films — paced for feed, ads and long-form.",
     image: "/assets/about-1.jpg",
+    video: "/assets/hero.mp4",
   },
   {
     name: "EDITING/POST-PROD",
     description:
-      "Color, cut and sound designed to feel premium — consistent across every deliverable.",
+      "Premium cut, colour and sound — including taking care of clients’ existing footage to save them time.",
     image: "/assets/about-3.jpg",
   },
   {
     name: "WORKSHOPS",
     description:
-      "Hands-on sessions for creators and teams who want to raise the bar on fitness content.",
-    image: "/assets/service-2.jpg",
+      "Community group shoots, roughly once a month — with a vision for brand-sponsored product sessions and ticketed events.",
+    image: "/assets/workshop-visual.png",
   },
-];
+] as const;
 
 function ServiceVisual({
   image,
+  video,
   priority = false,
+  play = true,
 }: {
   image: string;
+  video?: string;
   priority?: boolean;
+  play?: boolean;
 }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el || !video) return;
+
+    el.muted = true;
+    el.defaultMuted = true;
+    el.playsInline = true;
+
+    if (!play) {
+      el.pause();
+      return;
+    }
+
+    const tryPlay = () => {
+      const result = el.play();
+      if (result !== undefined) result.catch(() => {});
+    };
+
+    tryPlay();
+    el.addEventListener("loadeddata", tryPlay);
+    return () => el.removeEventListener("loadeddata", tryPlay);
+  }, [video, play]);
+
   return (
     <div className="relative h-[55vh] w-full overflow-hidden rounded lg:h-[calc(100svh-6rem)]">
-      <Image
-        src={image}
-        alt=""
-        fill
-        className="object-cover"
-        sizes="(max-width: 1024px) 100vw, 697px"
-        priority={priority}
-      />
+      {video ? (
+        <video
+          ref={videoRef}
+          className="absolute inset-0 h-full w-full object-cover"
+          src={video}
+          poster={image}
+          muted
+          loop
+          playsInline
+          autoPlay={play}
+          preload="metadata"
+          aria-hidden
+        />
+      ) : (
+        <Image
+          src={image}
+          alt=""
+          fill
+          className="object-cover"
+          sizes="(max-width: 1024px) 100vw, 697px"
+          priority={priority}
+        />
+      )}
     </div>
   );
 }
@@ -197,7 +242,12 @@ export function Services() {
               aria-labelledby={`service-tab-${active}`}
               className="lg:hidden"
             >
-              <ServiceVisual key={current.name} image={current.image} priority />
+              <ServiceVisual
+                key={current.name}
+                image={current.image}
+                video={"video" in current ? current.video : undefined}
+                priority
+              />
             </div>
 
             {/* Desktop — one full-height visual per tab */}
@@ -210,7 +260,9 @@ export function Services() {
                 >
                   <ServiceVisual
                     image={service.image}
+                    video={"video" in service ? service.video : undefined}
                     priority={index === 0}
+                    play={index === active}
                   />
                 </div>
               ))}

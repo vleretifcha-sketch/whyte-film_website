@@ -12,10 +12,16 @@ export type BookingPackage = {
   id: PackageId;
   name: string;
   includes: string;
+  /** Full breakdown shown via “Read more” on package cards */
+  details: string[];
+  note?: string;
   durationLabel: string;
   durationMinutes: number;
   price: number;
 };
+
+const PACKAGE_FEE_NOTE =
+  "Please note additional fees or charges may apply for gym access or photography fees";
 
 export type BookingAddon = {
   id: AddonId;
@@ -30,6 +36,11 @@ export const BOOKING_PACKAGES: BookingPackage[] = [
     id: "focus",
     name: "Focus",
     includes: "1 × 30min one-on-one videography session",
+    details: [
+      "1 × 30min one-on-one videography session",
+      "10 × premium edited action shots",
+    ],
+    note: PACKAGE_FEE_NOTE,
     durationLabel: "30 mins",
     durationMinutes: 30,
     price: 229,
@@ -38,6 +49,12 @@ export const BOOKING_PACKAGES: BookingPackage[] = [
     id: "flex",
     name: "Flex",
     includes: "1 × 45min one-on-one videography session",
+    details: [
+      "1 × 45min one-on-one videography session",
+      "10 × premium edited action shots",
+      "1 × 30–59 second highlight reel",
+    ],
+    note: PACKAGE_FEE_NOTE,
     durationLabel: "1 hr",
     durationMinutes: 60,
     price: 415,
@@ -46,6 +63,12 @@ export const BOOKING_PACKAGES: BookingPackage[] = [
     id: "motion",
     name: "Motion",
     includes: "1 × 60min one-on-one videography session",
+    details: [
+      "1 × 60min one-on-one videography session",
+      "2 × 10–30 second highlight reels",
+      "15 × premium edited action shots",
+    ],
+    note: PACKAGE_FEE_NOTE,
     durationLabel: "1 hr",
     durationMinutes: 60,
     price: 775,
@@ -53,15 +76,22 @@ export const BOOKING_PACKAGES: BookingPackage[] = [
   {
     id: "social",
     name: "Social",
-    includes: "1 × 120min one-on-one photography session",
-    durationLabel: "2 hr",
-    durationMinutes: 120,
+    includes: "1 × 60min one-on-one photography session",
+    details: [
+      "1 × 60min one-on-one photography session",
+      "20 × premium edited action shots",
+    ],
+    note: PACKAGE_FEE_NOTE,
+    durationLabel: "1 hr",
+    durationMinutes: 60,
     price: 1033,
   },
   {
     id: "gallery",
     name: "Gallery",
     includes: "1 × 60min one-on-one photography session",
+    details: ["1 × 60min one-on-one photography session"],
+    note: PACKAGE_FEE_NOTE,
     durationLabel: "1 hr",
     durationMinutes: 60,
     price: 465,
@@ -71,6 +101,12 @@ export const BOOKING_PACKAGES: BookingPackage[] = [
     name: "Studio",
     includes:
       "2 hours exclusive studio hire · 50 × premium edited action shots",
+    details: [
+      "2 × hours exclusive studio hire",
+      "50 × premium edited action shots",
+      "Unlimited guests",
+    ],
+    note: PACKAGE_FEE_NOTE,
     durationLabel: "2 hr",
     durationMinutes: 120,
     price: 1495,
@@ -207,14 +243,13 @@ export function melbourneNowLabel() {
   }).format(new Date());
 }
 
-/** Past dates unavailable; Sundays closed in demo */
+/** Past dates unavailable — Sundays are bookable */
 export function isDateBookable(date: Date) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const day = new Date(date);
   day.setHours(0, 0, 0, 0);
   if (day < today) return false;
-  if (day.getDay() === 0) return false;
   return true;
 }
 
@@ -223,9 +258,18 @@ export function slotsForDate(date: string | null): string[] {
   const [y, mo, d] = date.split("-").map(Number);
   const value = new Date(y, mo - 1, d);
   if (!isDateBookable(value)) return [];
-  // Saturday: fewer slots
+  // Saturday: fewer preset slots (custom request still available)
   if (value.getDay() === 6) return ["09:00", "12:30"];
   return [...TIME_SLOTS];
+}
+
+/** HH:mm within a sensible shoot window */
+export function isValidCustomTime(time: string) {
+  if (!/^\d{2}:\d{2}$/.test(time)) return false;
+  const [h, m] = time.split(":").map(Number);
+  if (Number.isNaN(h) || Number.isNaN(m)) return false;
+  const minutes = h * 60 + m;
+  return minutes >= 6 * 60 && minutes <= 21 * 60;
 }
 
 export function toIsoDate(date: Date) {

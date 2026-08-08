@@ -181,7 +181,7 @@ export function Statement() {
     >
       <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-8">
         <p className="statement-eyebrow text-base font-normal">
-          ( WE ARE <span className="font-bold">CREATIVE</span> )
+          ( WE DO <span className="font-bold">FITNESS</span> )
         </p>
         <div className="relative w-full">
           {phrases.map((lines, index) => {

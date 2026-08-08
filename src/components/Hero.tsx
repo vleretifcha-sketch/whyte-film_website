@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -11,6 +12,7 @@ import {
 } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { formatAud, getPackage } from "@/lib/booking";
 import { Button } from "./ui/Button";
 import { ArrowUpRight } from "./icons/ArrowUpRight";
 
@@ -44,55 +46,14 @@ const ROTATING_WORDS = [
 
 const ROTATE_WIDEST = "Greatness.";
 
-const TEAM = [
-  {
-    name: "Bayley Whyte",
-    role: "Photographer - Videomaker",
-    image: "/assets/team.jpg",
-  },
-  {
-    name: "Ben Warhurst",
-    role: "Co-Founder / VideoMaker",
-    image: "/assets/team-ben.jpg",
-  },
-] as const;
-
-function TeamCardContent({ member }: { member: (typeof TEAM)[number] }) {
-  return (
-    <div className="flex h-full w-full gap-4">
-      <div className="relative h-[108px] w-[85px] shrink-0 overflow-hidden rounded-xl">
-        <Image
-          src={member.image}
-          alt={member.name}
-          fill
-          className="object-cover"
-          sizes="85px"
-        />
-      </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-3">
-        <p className="text-sm font-medium text-white/60">Team</p>
-        <div>
-          <p className="text-lg font-bold text-white">{member.name}</p>
-          <p className="text-sm font-medium text-white/60">{member.role}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
+const FLEX_PACKAGE = getPackage("flex")!;
 
 export function Hero() {
   const root = useRef<HTMLElement>(null);
   const rotateRef = useRef<HTMLSpanElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [teamIndex, setTeamIndex] = useState(0);
-  const [teamTick, setTeamTick] = useState(0);
   const [wordmarkLit, setWordmarkLit] = useState(false);
   const [wordmarkSpot, setWordmarkSpot] = useState({ x: "50%", y: "50%" });
-
-  const selectTeam = (index: number) => {
-    setTeamIndex(index);
-    setTeamTick((t) => t + 1);
-  };
 
   const onWordmarkMove = useCallback((event: MouseEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -106,13 +67,6 @@ export function Hero() {
   const onWordmarkLeave = useCallback(() => {
     setWordmarkLit(false);
   }, []);
-
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      setTeamIndex((prev) => (prev + 1) % TEAM.length);
-    }, 4000);
-    return () => window.clearInterval(id);
-  }, [teamTick]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -350,73 +304,40 @@ export function Hero() {
             </div>
           </div>
 
-          <div
-            className="hero-card flex w-[min(100%,340px)] gap-4 rounded-2xl border border-white/15 bg-white/15 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-2xl backdrop-saturate-150 supports-[backdrop-filter]:bg-white/10"
-            role="group"
-            aria-roledescription="carousel"
-            aria-label="Team"
+          <Link
+            href={`/book/addons?package=${FLEX_PACKAGE.id}`}
+            className="hero-card flex w-[min(100%,340px)] gap-4 rounded-2xl border border-white/15 bg-white/15 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-2xl backdrop-saturate-150 transition-[transform,background-color] duration-300 hover:scale-[1.02] hover:bg-white/20 supports-[backdrop-filter]:bg-white/10"
+            aria-label={`Book ${FLEX_PACKAGE.name} package — most popular`}
           >
-            <div
-              className="relative h-[108px] min-w-0 flex-1 overflow-hidden [perspective:900px]"
-              aria-live="polite"
-            >
-              {TEAM.map((person, index) => {
-                const isActive = index === teamIndex;
-                return (
-                  <div
-                    key={person.name}
-                    className="absolute inset-0 origin-center transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none [backface-visibility:hidden]"
-                    style={{
-                      transform: isActive
-                        ? "rotateX(0deg)"
-                        : "rotateX(85deg)",
-                      opacity: isActive ? 1 : 0,
-                      pointerEvents: isActive ? "auto" : "none",
-                    }}
-                    aria-hidden={!isActive}
-                  >
-                    <TeamCardContent member={person} />
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="flex shrink-0 flex-col items-end justify-between">
-              <a
-                href="/about"
-                className="flex size-12 items-center justify-center rounded-xl !bg-white !text-[#010101] transition-transform hover:scale-105"
-                aria-label={`About ${TEAM[teamIndex].name}`}
-              >
-                <ArrowUpRight color="#010101" />
-              </a>
-              <div
-                className="flex items-end gap-1"
-                role="tablist"
-                aria-label="Team members"
-              >
-                {TEAM.map((person, index) => {
-                  const isActive = index === teamIndex;
-                  return (
-                    <button
-                      key={person.name}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      aria-label={person.name}
-                      onClick={() => selectTeam(index)}
-                      className="flex h-6 w-3 items-end justify-center"
-                    >
-                      <span
-                        className={`block h-4 w-0.5 rounded-full ${
-                          isActive ? "bg-white" : "bg-white/45"
-                        }`}
-                      />
-                    </button>
-                  );
-                })}
+            <div className="flex min-w-0 flex-1 gap-4">
+              <div className="relative size-[72px] shrink-0 overflow-hidden rounded-xl">
+                <Image
+                  src="/assets/service-1.jpg"
+                  alt=""
+                  fill
+                  className="object-cover"
+                  sizes="72px"
+                />
+              </div>
+              <div className="flex min-w-0 flex-1 flex-col gap-3">
+                <span className="inline-flex w-fit items-center rounded-lg border border-white/25 bg-white/10 px-2.5 py-1 text-[11px] font-semibold normal-case tracking-normal text-white/90">
+                  Most Popular
+                </span>
+                <div>
+                  <p className="text-lg font-bold text-white">
+                    {FLEX_PACKAGE.name} Package
+                  </p>
+                  <p className="text-sm font-medium text-white/60">
+                    {FLEX_PACKAGE.durationLabel} · {formatAud(FLEX_PACKAGE.price)}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-white text-[#010101]">
+              <ArrowUpRight color="#010101" />
+            </span>
+          </Link>
         </div>
       </div>
     </section>

@@ -1,14 +1,86 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Button } from "./ui/Button";
 import { SectionHeader } from "./SectionHeader";
-import { BOOKING_PACKAGES, formatAud } from "@/lib/booking";
+import {
+  BOOKING_PACKAGES,
+  formatAud,
+  type BookingPackage,
+} from "@/lib/booking";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
+
+function PackageCard({ item }: { item: BookingPackage }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <article className="packages-card flex flex-col justify-between gap-10 rounded-2xl border border-white/20 p-6 md:p-8">
+      <div className="flex flex-col gap-5">
+        <h2 className="font-display text-2xl font-medium leading-none tracking-[-0.02em] text-white md:text-[1.75rem]">
+          {item.name}
+        </h2>
+        <div>
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.1em] text-white/45">
+            Includes
+          </p>
+          <p className="text-base leading-relaxed text-white/80">
+            {item.includes}
+          </p>
+
+          <div
+            id={`package-details-${item.id}`}
+            className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+              open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+            }`}
+          >
+            <div className="overflow-hidden">
+              <ul className="mt-4 flex flex-col gap-2 border-t border-white/10 pt-4 text-sm leading-relaxed text-white/75">
+                {item.details.map((line) => (
+                  <li key={line} className="flex gap-2">
+                    <span className="mt-[0.55em] size-1 shrink-0 rounded-full bg-white/50" />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+              {item.note ? (
+                <p className="mt-3 text-xs leading-relaxed text-white/45">
+                  {item.note}
+                </p>
+              ) : null}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="btn-tertiary mt-4"
+            aria-expanded={open}
+            aria-controls={`package-details-${item.id}`}
+            onClick={() => setOpen((value) => !value)}
+          >
+            {open ? "Show less" : "Read more"}
+          </button>
+        </div>
+        <div className="flex items-end justify-between gap-4 border-t border-white/15 pt-5">
+          <p className="text-sm font-medium text-white/50">
+            {item.durationLabel}
+          </p>
+          <p className="text-xl font-bold text-white md:text-2xl">
+            {formatAud(item.price)}
+          </p>
+        </div>
+      </div>
+      <div>
+        <Button href={`/book/addons?package=${item.id}`} variant="outline">
+          Select
+        </Button>
+      </div>
+    </article>
+  );
+}
 
 export function Packages() {
   const root = useRef<HTMLElement>(null);
@@ -65,37 +137,7 @@ export function Packages() {
 
         <div className="packages-grid grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {BOOKING_PACKAGES.map((item) => (
-            <article
-              key={item.id}
-              className="packages-card flex flex-col justify-between gap-10 rounded-2xl border border-white/20 p-6 md:p-8"
-            >
-              <div className="flex flex-col gap-5">
-                <h2 className="font-display text-2xl font-medium leading-none tracking-[-0.02em] text-white md:text-[1.75rem]">
-                  {item.name}
-                </h2>
-                <div>
-                  <p className="mb-2 text-xs font-bold uppercase tracking-[0.1em] text-white/45">
-                    Includes
-                  </p>
-                  <p className="text-base leading-relaxed text-white/80">
-                    {item.includes}
-                  </p>
-                </div>
-                <div className="flex items-end justify-between gap-4 border-t border-white/15 pt-5">
-                  <p className="text-sm font-medium text-white/50">
-                    {item.durationLabel}
-                  </p>
-                  <p className="text-xl font-bold text-white md:text-2xl">
-                    {formatAud(item.price)}
-                  </p>
-                </div>
-              </div>
-              <div>
-                <Button href={`/book/addons?package=${item.id}`} variant="outline">
-                  Select
-                </Button>
-              </div>
-            </article>
+            <PackageCard key={item.id} item={item} />
           ))}
         </div>
       </div>

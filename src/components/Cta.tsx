@@ -10,7 +10,7 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const lines = [
   ["FEEL", "LIKE"],
-  ["COLLABORATE?"],
+  ["COLLABORATING?"],
 ];
 
 /** Oblique wipe: diagonal edge sweeps upward (/ ) */

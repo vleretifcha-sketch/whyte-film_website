@@ -508,6 +508,28 @@ a {
   color: #ffffff !important;
 }
 
+.btn-tertiary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.btn-tertiary:hover,
+.btn-tertiary:focus-visible {
+  color: #ffffff;
+  outline: none;
+}
+
 /* Button label roll — bottom → top on hover */
 .btn-roll {
   display: grid;
@@ -611,6 +633,14 @@ button {
   animation: marquee 32s linear infinite;
 }
 
+.feedback-marquee {
+  animation: marquee 55s linear infinite;
+}
+
+.feedback-marquee-wrap:hover .feedback-marquee {
+  animation-play-state: paused;
+}
+
 /*
   Progressive blur — full-height stacked layers + exponential masks.
   All layers share the same box (no gaps / margins). Soft continuous ramp.
@@ -689,7 +719,8 @@ button {
   }
 
   .marquee-track,
-  .partners-marquee {
+  .partners-marquee,
+  .feedback-marquee {
     animation: none;
   }
 
