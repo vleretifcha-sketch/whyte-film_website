@@ -398,6 +398,15 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+html.theme-light body {
+  background: #f6f6f6;
+  color: #010101;
+}
+
+html.theme-light .nav-link::after {
+  background: #010101;
+}
+
 a {
   color: inherit;
   text-decoration: none;

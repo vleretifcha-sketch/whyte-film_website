@@ -5,11 +5,13 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ProgressiveBlur } from "./NavProgressiveBlur";
 import { ButtonLabel } from "./ui/Button";
+import { useIsLightTheme } from "@/hooks/useIsLightTheme";
 import { navLinks } from "@/lib/nav";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const light = useIsLightTheme();
 
   return (
     <header className="sticky top-0 z-50 -mb-[60px] overflow-visible">
@@ -23,23 +25,20 @@ export function Navbar() {
             alt="whyte films"
             width={148}
             height={16}
-            className="h-3.5 w-auto md:h-4"
+            className={`h-3.5 w-auto md:h-4 ${light ? "brightness-0" : ""}`}
           />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => {
-            const active =
-              link.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(link.href);
+            const active = pathname.startsWith(link.href);
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`nav-link text-base font-medium text-white ${
-                  active ? "opacity-100" : "opacity-80"
-                }`}
+                className={`nav-link text-base font-medium ${
+                  light ? "text-[#010101]" : "text-white"
+                } ${active ? "opacity-100" : "opacity-80"}`}
               >
                 {link.label}
               </Link>
@@ -47,7 +46,11 @@ export function Navbar() {
           })}
           <Link
             href="/contact"
-            className="btn btn-secondary inline-flex h-10 items-center justify-center overflow-hidden rounded-2xl !border !border-solid !border-white !bg-transparent px-4 text-sm font-medium !text-white"
+            className={`btn inline-flex h-10 items-center justify-center overflow-hidden rounded-2xl !border !border-solid !bg-transparent px-4 text-sm font-medium ${
+              light
+                ? "btn-secondary-dark !border-[#010101] !text-[#010101]"
+                : "btn-secondary !border-white !text-white"
+            }`}
           >
             <ButtonLabel>Contact</ButtonLabel>
           </Link>
@@ -55,26 +58,28 @@ export function Navbar() {
 
         <button
           type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/40 md:hidden"
+          className={`flex h-9 w-9 items-center justify-center rounded-xl border md:hidden ${
+            light ? "border-[#010101]/40 text-[#010101]" : "border-white/40 text-white"
+          }`}
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
         >
           <span className="relative block h-3.5 w-5">
             <span
-              className={`absolute left-0 h-px w-full bg-white transition-all ${
-                open ? "top-1.5 rotate-45" : "top-0"
-              }`}
+              className={`absolute left-0 h-px w-full transition-all ${
+                light ? "bg-[#010101]" : "bg-white"
+              } ${open ? "top-1.5 rotate-45" : "top-0"}`}
             />
             <span
-              className={`absolute left-0 top-1.5 h-px w-full bg-white transition-opacity ${
-                open ? "opacity-0" : "opacity-100"
-              }`}
+              className={`absolute left-0 top-1.5 h-px w-full transition-opacity ${
+                light ? "bg-[#010101]" : "bg-white"
+              } ${open ? "opacity-0" : "opacity-100"}`}
             />
             <span
-              className={`absolute left-0 h-px w-full bg-white transition-all ${
-                open ? "top-1.5 -rotate-45" : "top-3"
-              }`}
+              className={`absolute left-0 h-px w-full transition-all ${
+                light ? "bg-[#010101]" : "bg-white"
+              } ${open ? "top-1.5 -rotate-45" : "top-3"}`}
             />
           </span>
         </button>
@@ -82,11 +87,15 @@ export function Navbar() {
 
       {open && (
         <nav
-          className="fixed inset-0 z-[60] flex flex-col bg-[#010101]/95 pt-[60px] backdrop-blur-3xl md:hidden"
+          className={`fixed inset-0 z-[60] flex flex-col pt-[60px] backdrop-blur-3xl md:hidden ${
+            light ? "bg-[#f6f6f6]/95" : "bg-[#010101]/95"
+          }`}
           aria-label="Mobile"
         >
           <div
-            className="pointer-events-none absolute inset-0 bg-[#010101]/70"
+            className={`pointer-events-none absolute inset-0 ${
+              light ? "bg-[#f6f6f6]/70" : "bg-[#010101]/70"
+            }`}
             aria-hidden
           />
           <div className="relative z-10 flex flex-col gap-4 px-[var(--pad)] pb-8 pt-4">
@@ -94,7 +103,9 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-xl font-medium text-white"
+                className={`text-xl font-medium ${
+                  light ? "text-[#010101]" : "text-white"
+                }`}
                 onClick={() => setOpen(false)}
               >
                 {link.label}
@@ -102,7 +113,11 @@ export function Navbar() {
             ))}
             <Link
               href="/contact"
-              className="btn btn-secondary mt-2 inline-flex h-10 w-fit items-center justify-center overflow-hidden rounded-2xl !border !border-solid !border-white !bg-transparent px-4 text-sm font-medium !text-white"
+              className={`btn mt-2 inline-flex h-10 w-fit items-center justify-center overflow-hidden rounded-2xl !border !border-solid !bg-transparent px-4 text-sm font-medium ${
+                light
+                  ? "btn-secondary-dark !border-[#010101] !text-[#010101]"
+                  : "btn-secondary !border-white !text-white"
+              }`}
               onClick={() => setOpen(false)}
             >
               <ButtonLabel>Contact</ButtonLabel>
