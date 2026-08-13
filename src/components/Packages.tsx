@@ -18,7 +18,7 @@ function PackageCard({ item }: { item: BookingPackage }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <article className="packages-card flex flex-col justify-between gap-10 rounded-2xl border border-white/20 p-6 md:p-8">
+    <article className="packages-card flex flex-col justify-between gap-10 rounded-2xl border border-white/20 bg-transparent p-6 transition-[border-color,background-color] duration-300 ease-out hover:border-white/55 hover:bg-white/[0.06] md:p-8">
       <div className="flex flex-col gap-5">
         <h2 className="font-display text-2xl font-medium leading-none tracking-[-0.02em] text-white md:text-[1.75rem]">
           {item.name}
@@ -64,11 +64,11 @@ function PackageCard({ item }: { item: BookingPackage }) {
             {open ? "Show less" : "Read more"}
           </button>
         </div>
-        <div className="flex items-end justify-between gap-4 border-t border-white/15 pt-5">
-          <p className="text-sm font-medium text-white/50">
+        <div className="flex items-end justify-between gap-3 border-t border-white/15 pt-5">
+          <p className="min-w-0 shrink text-sm font-medium text-white/50">
             {item.durationLabel}
           </p>
-          <p className="text-xl font-bold text-white md:text-2xl">
+          <p className="shrink-0 text-right text-lg font-bold tabular-nums text-white md:text-xl">
             {formatAud(item.price)}
           </p>
         </div>
@@ -110,9 +110,11 @@ export function Packages() {
         duration: 0.9,
         stagger: 0.12,
         ease: "power3.out",
+        clearProps: "transform",
         scrollTrigger: {
           trigger: section.querySelector(".packages-grid"),
           start: "top 80%",
+          once: true,
         },
       });
     },

@@ -16,7 +16,7 @@ import { formatAud, getPackage } from "@/lib/booking";
 import { Button } from "./ui/Button";
 import { ArrowUpRight } from "./icons/ArrowUpRight";
 
-const HERO_VIDEO = "/assets/hero.mp4";
+const HERO_VIDEO = "/assets/hero.mp4?v=landscape-ad";
 
 gsap.registerPlugin(useGSAP);
 

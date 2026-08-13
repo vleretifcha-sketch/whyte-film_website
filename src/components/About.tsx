@@ -17,10 +17,10 @@ const stats = [
 ];
 
 const categories = [
-  { label: "Athletes", src: "/assets/about/athletes.jpg" },
-  { label: "Gyms", src: "/assets/about/gyms.jpg" },
+  { label: "Athletes", src: "/assets/about/athletes-dip.jpg" },
+  { label: "Gyms", src: "/assets/about/extras.jpg" },
   { label: "Products", src: "/assets/about/products.jpg" },
-  { label: "Extras", src: "/assets/about/extras.jpg" },
+  { label: "Extras", src: "/assets/about/extras-studio.jpg" },
 ] as const;
 
 export function About({ showHeader = true }: { showHeader?: boolean }) {
@@ -110,7 +110,7 @@ export function About({ showHeader = true }: { showHeader?: boolean }) {
 
           <div className="relative min-h-[420px] overflow-hidden rounded-3xl lg:min-h-[722px]">
             <Image
-              src="/assets/about/main.jpg"
+              src="/assets/about/main-wf.jpg"
               alt="Whyte Films — fitness content"
               fill
               className="object-cover"
