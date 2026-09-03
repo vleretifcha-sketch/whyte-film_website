@@ -28,13 +28,13 @@ const services = [
     name: "EDITING/POST-PROD",
     description:
       "Premium cut, colour and sound — including taking care of clients’ existing footage to save them time.",
-    image: "/assets/about-3.jpg",
+    image: "/assets/service-editing.jpg",
   },
   {
     name: "WORKSHOPS",
     description:
       "Community group shoots, roughly once a month — with a vision for brand-sponsored product sessions and ticketed events.",
-    image: "/assets/workshop-visual.png",
+    image: "/assets/service-workshops-group.jpg",
   },
 ] as const;
 
