@@ -16,7 +16,7 @@ import { formatAud, getPackage } from "@/lib/booking";
 import { Button } from "./ui/Button";
 import { ArrowUpRight } from "./icons/ArrowUpRight";
 
-const HERO_VIDEO = "/assets/hero.mp4?v=landscape-ad";
+const HERO_VIDEO = "/assets/hero.mp4?v=landscape-ad-2";
 
 gsap.registerPlugin(useGSAP);
 
@@ -75,6 +75,8 @@ export function Hero() {
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
+    video.controls = false;
+    video.disablePictureInPicture = true;
 
     const tryPlay = () => {
       const play = video.play();
@@ -188,7 +190,7 @@ export function Hero() {
       <div className="absolute inset-0 overflow-hidden bg-black">
         <video
           ref={videoRef}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
           src={HERO_VIDEO}
           autoPlay
           muted
@@ -196,6 +198,11 @@ export function Hero() {
           playsInline
           preload="auto"
           poster="/assets/hero.jpg"
+          controls={false}
+          disablePictureInPicture
+          disableRemotePlayback
+          controlsList="nodownload nofullscreen noremoteplayback"
+          tabIndex={-1}
           aria-hidden
         />
         {/* Black overlay + bottom fade for copy readability */}

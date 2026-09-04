@@ -113,6 +113,7 @@ export function About({ showHeader = true }: { showHeader?: boolean }) {
               src="/assets/about/main-wf.jpg"
               alt="Whyte Films — fitness content"
               fill
+              quality={90}
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 50vw"
               priority
@@ -130,6 +131,7 @@ export function About({ showHeader = true }: { showHeader?: boolean }) {
                 src={category.src}
                 alt={category.label}
                 fill
+                quality={90}
                 className="object-cover"
                 sizes="(max-width: 1024px) 50vw, 25vw"
               />

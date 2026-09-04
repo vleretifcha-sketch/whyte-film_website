@@ -22,7 +22,7 @@ const services = [
     description:
       "High-impact film for launches, athlete stories and brand films — paced for feed, ads and long-form.",
     image: "/assets/about-1.jpg",
-    video: "/assets/hero.mp4",
+    video: "/assets/service-videos.mp4",
   },
   {
     name: "EDITING/POST-PROD",
@@ -58,6 +58,8 @@ function ServiceVisual({
     el.muted = true;
     el.defaultMuted = true;
     el.playsInline = true;
+    el.controls = false;
+    el.disablePictureInPicture = true;
 
     if (!play) {
       el.pause();
@@ -79,14 +81,19 @@ function ServiceVisual({
       {video ? (
         <video
           ref={videoRef}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
           src={video}
           poster={image}
           muted
           loop
           playsInline
           autoPlay={play}
-          preload="metadata"
+          preload="auto"
+          controls={false}
+          disablePictureInPicture
+          disableRemotePlayback
+          controlsList="nodownload nofullscreen noremoteplayback"
+          tabIndex={-1}
           aria-hidden
         />
       ) : (
@@ -94,6 +101,7 @@ function ServiceVisual({
           src={image}
           alt=""
           fill
+          quality={90}
           className="object-cover"
           sizes="(max-width: 1024px) 100vw, 697px"
           priority={priority}
