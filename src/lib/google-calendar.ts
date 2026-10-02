@@ -8,12 +8,33 @@ function getCalendarId(): string {
   return id;
 }
 
+/** Vercel often stores the PEM as one line, with quotes, or with literal `\n`. */
+export function normalizePrivateKey(raw: string): string {
+  let key = raw.trim();
+  if (
+    (key.startsWith('"') && key.endsWith('"')) ||
+    (key.startsWith("'") && key.endsWith("'"))
+  ) {
+    key = key.slice(1, -1);
+  }
+  key = key.replace(/\\n/g, "\n").replace(/\r/g, "").trim();
+
+  const match = key.match(
+    /-----BEGIN ([A-Z0-9 ]+)-----([\s\S]*?)-----END \1-----/,
+  );
+  if (!match) return key;
+
+  const label = match[1];
+  const body = match[2].replace(/[^A-Za-z0-9+/=]/g, "");
+  const lines = body.match(/.{1,64}/g) ?? [];
+  return `-----BEGIN ${label}-----\n${lines.join("\n")}\n-----END ${label}-----\n`;
+}
+
 function getAuth() {
   const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL?.trim();
-  const privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(
-    /\\n/g,
-    "\n",
-  );
+  const privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY
+    ? normalizePrivateKey(process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY)
+    : "";
 
   if (!clientEmail || !privateKey) {
     throw new Error(
@@ -62,7 +83,20 @@ export async function fetchBusyIntervals(
     },
   });
 
-  const busy = res.data.calendars?.[calendarId]?.busy ?? [];
+  const calendarResult = res.data.calendars?.[calendarId];
+  if (calendarResult?.errors?.length) {
+    const reason = calendarResult.errors
+      .map((error) => error.reason)
+      .filter(Boolean)
+      .join(", ");
+    throw new Error(
+      reason
+        ? `Google Calendar refused the request (${reason})`
+        : "Google Calendar refused the request",
+    );
+  }
+
+  const busy = calendarResult?.busy ?? [];
   return busy
     .filter((b): b is { start: string; end: string } => Boolean(b.start && b.end))
     .map((b) => ({
