@@ -15,8 +15,6 @@ import {
   formatSlotLabel,
   getPackage,
   isDateBookable,
-  isValidCustomTime,
-  slotsForDate,
   toIsoDate,
 } from "@/lib/booking";
 
@@ -51,8 +49,9 @@ export function TimeStep() {
   const now = new Date();
   const [viewYear, setViewYear] = useState(now.getFullYear());
   const [viewMonth, setViewMonth] = useState(now.getMonth());
-  const [customMode, setCustomMode] = useState(false);
-  const [customTime, setCustomTime] = useState("10:00");
+  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
+  const [slotsError, setSlotsError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!ready) return;
@@ -67,21 +66,55 @@ export function TimeStep() {
     () => buildCalendarDays(viewYear, viewMonth),
     [viewYear, viewMonth],
   );
-  const availableSlots = slotsForDate(state.date);
   const subtotal = bookingSubtotal(state);
 
   useEffect(() => {
-    if (!state.time) {
-      setCustomMode(false);
+    if (!state.date || !state.packageId) {
+      setAvailableSlots([]);
+      setSlotsError(null);
       return;
     }
+
+    const controller = new AbortController();
+    setSlotsLoading(true);
+    setSlotsError(null);
+
+    const params = new URLSearchParams({
+      date: state.date,
+      packageId: state.packageId,
+    });
+
+    fetch(`/api/availability?${params}`, { signal: controller.signal })
+      .then(async (res) => {
+        const data = (await res.json()) as { slots?: string[]; error?: string };
+        if (!res.ok) throw new Error(data.error || "Failed to load times");
+        return data.slots ?? [];
+      })
+      .then((slots) => {
+        setAvailableSlots(slots);
+      })
+      .catch((err: unknown) => {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        setAvailableSlots([]);
+        setSlotsError(
+          err instanceof Error ? err.message : "Failed to load times",
+        );
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setSlotsLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [state.date, state.packageId]);
+
+  useEffect(() => {
+    if (!state.time) return;
+    if (slotsLoading) return;
+    if (availableSlots.length === 0) return;
     if (!availableSlots.includes(state.time)) {
-      setCustomMode(true);
-      setCustomTime(state.time);
-    } else {
-      setCustomMode(false);
+      update({ time: null });
     }
-  }, [state.time, availableSlots]);
+  }, [availableSlots, slotsLoading, state.time, update]);
 
   if (!ready || !pkg) {
     return (
@@ -97,27 +130,8 @@ export function TimeStep() {
     setViewMonth(next.getMonth());
   };
 
-  const selectPreset = (slot: string) => {
-    setCustomMode(false);
-    update({ time: slot });
-  };
-
-  const selectCustomMode = () => {
-    setCustomMode(true);
-    const next = isValidCustomTime(customTime) ? customTime : "10:00";
-    setCustomTime(next);
-    update({ time: next });
-  };
-
-  const onCustomTimeChange = (value: string) => {
-    setCustomTime(value);
-    if (isValidCustomTime(value)) update({ time: value });
-  };
-
   const canContinue = Boolean(
-    state.date &&
-      state.time &&
-      (availableSlots.includes(state.time) || isValidCustomTime(state.time)),
+    state.date && state.time && availableSlots.includes(state.time),
   );
 
   return (
@@ -190,7 +204,6 @@ export function TimeStep() {
                     disabled={!bookable}
                     aria-pressed={selected}
                     onClick={() => {
-                      setCustomMode(false);
                       update({ date: iso, time: null });
                     }}
                     className={`book-day ${
@@ -228,79 +241,34 @@ export function TimeStep() {
                 <p className="text-sm text-white/50">
                   Select a date to see available times.
                 </p>
-              ) : (
-                <div className="flex flex-col gap-4">
-                  {availableSlots.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
-                      {availableSlots.map((slot) => {
-                        const selected = !customMode && state.time === slot;
-                        return (
-                          <button
-                            key={slot}
-                            type="button"
-                            aria-pressed={selected}
-                            onClick={() => selectPreset(slot)}
-                            className={`book-slot w-full sm:w-auto ${
-                              selected ? "book-slot--selected" : ""
-                            }`}
-                          >
-                            {formatSlotLabel(slot)}
-                          </button>
-                        );
-                      })}
+              ) : slotsLoading ? (
+                <p className="text-sm text-white/50">Loading available times…</p>
+              ) : slotsError ? (
+                <p className="text-sm text-red-300/90">{slotsError}</p>
+              ) : availableSlots.length > 0 ? (
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
+                  {availableSlots.map((slot) => {
+                    const selected = state.time === slot;
+                    return (
                       <button
+                        key={slot}
                         type="button"
-                        aria-pressed={customMode}
-                        onClick={selectCustomMode}
+                        aria-pressed={selected}
+                        onClick={() => update({ time: slot })}
                         className={`book-slot w-full sm:w-auto ${
-                          customMode ? "book-slot--selected" : ""
+                          selected ? "book-slot--selected" : ""
                         }`}
                       >
-                        Request custom time
+                        {formatSlotLabel(slot)}
                       </button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-3">
-                      <p className="text-sm text-white/50">
-                        No preset times listed — request a custom start time.
-                      </p>
-                      <button
-                        type="button"
-                        aria-pressed={customMode}
-                        onClick={selectCustomMode}
-                        className={`book-slot w-fit ${
-                          customMode ? "book-slot--selected" : ""
-                        }`}
-                      >
-                        Request custom time
-                      </button>
-                    </div>
-                  )}
-
-                  {customMode ? (
-                    <div className="flex flex-col gap-2 rounded-2xl border border-white/15 bg-white/[0.04] p-4">
-                      <label
-                        htmlFor="custom-start-time"
-                        className="text-sm font-medium text-white/70"
-                      >
-                        Preferred start time
-                      </label>
-                      <input
-                        id="custom-start-time"
-                        type="time"
-                        min="06:00"
-                        max="21:00"
-                        value={customTime}
-                        onChange={(e) => onCustomTimeChange(e.target.value)}
-                        className="h-12 w-full max-w-[220px] rounded-2xl border border-white/25 bg-transparent px-4 text-sm text-white outline-none transition-colors focus:border-white [color-scheme:dark]"
-                      />
-                      <p className="text-xs leading-relaxed text-white/45">
-                        We’ll confirm this custom time request by email —
-                        Sundays are available.
-                      </p>
-                    </div>
-                  ) : null}
+                    );
+                  })}
                 </div>
+              ) : (
+                <p className="text-sm text-white/50">
+                  No start times available this day (busy calendar or outside
+                  9am–5pm for this package length). Try another date.
+                </p>
               )}
             </div>
           </div>

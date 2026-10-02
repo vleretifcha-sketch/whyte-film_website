@@ -21,8 +21,8 @@ const services = [
     name: "VIDEOS",
     description:
       "High-impact film for launches, athlete stories and brand films — paced for feed, ads and long-form.",
-    image: "/assets/about-1.jpg",
-    video: "/assets/service-videos.mp4",
+    image: "/assets/service-aiden-flex-poster.jpg",
+    video: "/assets/service-aiden-flex.mp4",
   },
   {
     name: "EDITING/POST-PROD",

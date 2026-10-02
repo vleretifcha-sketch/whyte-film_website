@@ -19,7 +19,7 @@ const stats = [
 const categories = [
   { label: "Athletes", src: "/assets/about/athletes-dip.jpg" },
   { label: "Gyms", src: "/assets/about/extras.jpg" },
-  { label: "Products", src: "/assets/about/products.jpg" },
+  { label: "Products", src: "/assets/about/products-elevate.jpg" },
   { label: "Extras", src: "/assets/about/extras-studio.jpg" },
 ] as const;
 
@@ -110,11 +110,11 @@ export function About({ showHeader = true }: { showHeader?: boolean }) {
 
           <div className="relative min-h-[420px] overflow-hidden rounded-3xl lg:min-h-[722px]">
             <Image
-              src="/assets/about/main-wf.jpg"
-              alt="Whyte Films — fitness content"
+              src="/assets/about/about-portrait.jpg"
+              alt="Whyte Films photographer"
               fill
               quality={90}
-              className="object-cover"
+              className="object-cover object-[center_35%]"
               sizes="(max-width: 1024px) 100vw, 50vw"
               priority
             />

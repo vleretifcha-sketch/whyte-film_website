@@ -264,6 +264,19 @@ html.has-custom-cursor * {
   opacity: 1;
 }
 
+/* Background hero: no native play button or control bar (Safari/WebKit). */
+.hero-video::-webkit-media-controls,
+.hero-video::-webkit-media-controls-enclosure,
+.hero-video::-webkit-media-controls-panel,
+.hero-video::-webkit-media-controls-play-button,
+.hero-video::-webkit-media-controls-start-playback-button,
+.hero-video::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+  -webkit-appearance: none;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* Hero wordmark: solid black flashlight under cursor */
 .hero-wordmark {
   --spot: 0px;

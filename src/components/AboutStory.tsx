@@ -27,7 +27,7 @@ export function AboutStory() {
 
           <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl md:aspect-[5/6]">
             <Image
-              src="/assets/about-founders.jpg"
+              src="/assets/about/about-forest.jpg"
               alt="Bayley Whyte and Ben Warhurst"
               fill
               className="object-cover"

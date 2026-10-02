@@ -98,6 +98,7 @@ export function AddonsStep() {
                         src={addon.image}
                         alt=""
                         fill
+                        loading="eager"
                         className="object-cover"
                         sizes="(max-width: 640px) 96px, 280px"
                       />

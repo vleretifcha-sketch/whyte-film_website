@@ -16,7 +16,7 @@ import { formatAud, getPackage } from "@/lib/booking";
 import { Button } from "./ui/Button";
 import { ArrowUpRight } from "./icons/ArrowUpRight";
 
-const HERO_VIDEO = "/assets/hero.mp4?v=landscape-ad-2";
+const HERO_VIDEO = "/assets/hero.mp4?v=landscape-ad";
 
 gsap.registerPlugin(useGSAP);
 
@@ -72,34 +72,33 @@ export function Hero() {
     const video = videoRef.current;
     if (!video) return;
 
+    // Safari shows its native player when a video has audio or the muted
+    // attribute is missing at first paint. Force a silent inline loop.
     video.muted = true;
     video.defaultMuted = true;
+    video.setAttribute("muted", "");
     video.playsInline = true;
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "true");
     video.controls = false;
+    video.removeAttribute("controls");
     video.disablePictureInPicture = true;
 
     const tryPlay = () => {
+      if (!video.paused) return;
       const play = video.play();
-      if (play !== undefined) {
-        play.catch(() => {
-          // Autoplay blocked — retry on first interaction
-        });
-      }
+      if (play !== undefined) play.catch(() => {});
     };
 
     tryPlay();
     video.addEventListener("loadeddata", tryPlay);
     video.addEventListener("canplay", tryPlay);
-
-    const unlock = () => tryPlay();
-    window.addEventListener("touchstart", unlock, { once: true });
-    window.addEventListener("click", unlock, { once: true });
+    video.addEventListener("pause", tryPlay);
 
     return () => {
       video.removeEventListener("loadeddata", tryPlay);
       video.removeEventListener("canplay", tryPlay);
-      window.removeEventListener("touchstart", unlock);
-      window.removeEventListener("click", unlock);
+      video.removeEventListener("pause", tryPlay);
     };
   }, []);
 
@@ -190,7 +189,7 @@ export function Hero() {
       <div className="absolute inset-0 overflow-hidden bg-black">
         <video
           ref={videoRef}
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+          className="hero-video pointer-events-none absolute inset-0 h-full w-full object-cover"
           src={HERO_VIDEO}
           autoPlay
           muted
@@ -198,10 +197,8 @@ export function Hero() {
           playsInline
           preload="auto"
           poster="/assets/hero.jpg"
-          controls={false}
           disablePictureInPicture
           disableRemotePlayback
-          controlsList="nodownload nofullscreen noremoteplayback"
           tabIndex={-1}
           aria-hidden
         />

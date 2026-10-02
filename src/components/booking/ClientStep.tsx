@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { BookingStepper } from "@/components/booking/BookingStepper";
-import { usePageTransition } from "@/components/PageTransition";
 import { useBookingState } from "@/hooks/useBookingState";
 import {
   BOOKING_ADDONS,
@@ -31,12 +30,14 @@ const HEAR_OPTIONS = [
 
 export function ClientStep() {
   const router = useRouter();
-  const { navigate } = usePageTransition();
-  const { state, ready, clearBooking } = useBookingState();
-  const [submitted, setSubmitted] = useState(false);
+  const searchParams = useSearchParams();
+  const { state, ready } = useBookingState();
   const [agreeWhyte, setAgreeWhyte] = useState(false);
   const [agreeCancel, setAgreeCancel] = useState(false);
   const [newsletter, setNewsletter] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const cancelled = searchParams.get("cancelled") === "1";
 
   useEffect(() => {
     if (!ready) return;
@@ -67,34 +68,47 @@ export function ClientStep() {
     );
   }
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!agreeWhyte || !agreeCancel) return;
-    setSubmitted(true);
-    clearBooking();
-  };
+    if (!agreeWhyte || !agreeCancel || submitting) return;
 
-  if (submitted) {
-    return (
-      <section className="bg-[#010101] px-[var(--pad)] pb-[var(--section-y)] pt-28 md:pt-32">
-        <div className="mx-auto flex w-full max-w-[720px] flex-col items-start gap-6">
-          <p className="text-sm font-bold uppercase tracking-[0.1em] text-white/50">
-            Booking request
-          </p>
-          <h1 className="font-display text-[clamp(2rem,5vw,3.5rem)] font-medium leading-[0.95] tracking-[-0.03em] text-white">
-            Thanks — we&apos;ll be in touch.
-          </h1>
-          <p className="max-w-[520px] text-base leading-relaxed text-white/65">
-            Your {pkg.name} package request has been received. Our team will
-            confirm availability shortly.
-          </p>
-          <ActionButton onClick={() => navigate("/")}>
-            Back to home
-          </ActionButton>
-        </div>
-      </section>
-    );
-  }
+    const form = new FormData(event.currentTarget);
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          packageId: state.packageId,
+          addonIds: state.addonIds,
+          date: state.date,
+          time: state.time,
+          client: {
+            name: String(form.get("name") ?? ""),
+            email: String(form.get("email") ?? ""),
+            phone: String(form.get("phone") ?? ""),
+            location: String(form.get("location") ?? ""),
+            reason: String(form.get("reason") ?? ""),
+            source: String(form.get("source") ?? ""),
+            notes: String(form.get("notes") ?? ""),
+            social: String(form.get("social") ?? ""),
+            newsletter,
+          },
+        }),
+      });
+
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || "Could not start checkout");
+      }
+      window.location.href = data.url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Checkout failed");
+      setSubmitting(false);
+    }
+  };
 
   return (
     <section className="bg-[#010101] px-[var(--pad)] pb-28 pt-24 md:pb-32 md:pt-32">
@@ -107,6 +121,13 @@ export function ClientStep() {
         >
           ← Back
         </Link>
+
+        {cancelled ? (
+          <p className="rounded-2xl border border-white/20 bg-white/[0.04] px-4 py-3 text-sm text-white/70">
+            Payment was cancelled. You can update details and try again — your
+            selected time is not held until payment completes.
+          </p>
+        ) : null}
 
         <form
           onSubmit={onSubmit}
@@ -270,13 +291,19 @@ export function ClientStep() {
               </label>
             </div>
 
+            {error ? (
+              <p className="text-sm text-red-300/90" role="alert">
+                {error}
+              </p>
+            ) : null}
+
             <div className="hidden pt-2 lg:block">
               <ActionButton
                 type="submit"
-                disabled={!agreeWhyte || !agreeCancel}
+                disabled={!agreeWhyte || !agreeCancel || submitting}
                 className="w-full"
               >
-                Confirm booking
+                {submitting ? "Redirecting to payment…" : "Pay & confirm booking"}
               </ActionButton>
             </div>
           </aside>
@@ -284,10 +311,10 @@ export function ClientStep() {
           <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/20 bg-[#010101]/95 px-[var(--pad)] py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
             <ActionButton
               type="submit"
-              disabled={!agreeWhyte || !agreeCancel}
+              disabled={!agreeWhyte || !agreeCancel || submitting}
               className="w-full"
             >
-              Confirm booking
+              {submitting ? "Redirecting…" : "Pay & confirm booking"}
             </ActionButton>
           </div>
         </form>

@@ -19,10 +19,8 @@ import { footerLinks } from "@/lib/nav";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const socials = [
-  { href: "https://instagram.com", label: "Instagram" },
-  { href: "https://twitter.com", label: "Twitter" },
-  { href: "https://www.behance.net", label: "Behance" },
-  { href: "mailto:hello@whytefilms.com.au", label: "Contact" },
+  { href: "https://www.facebook.com/whyte.films/", label: "Facebook" },
+  { href: "https://www.instagram.com/whyte.films/", label: "Instagram" },
 ];
 
 const metaLinks = [

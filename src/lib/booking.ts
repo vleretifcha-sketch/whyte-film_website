@@ -119,28 +119,28 @@ export const BOOKING_ADDONS: BookingAddon[] = [
     title: "Add 10 × Premium Edited Photos",
     price: 100,
     label: "PHOTOS",
-    image: "/assets/about-1.jpg",
+    image: "/assets/addons/photos.jpg",
   },
   {
     id: "reel",
     title: "Add 1 × Social Media Reel (15–30secs, Portrait)",
     price: 99,
     label: "REEL",
-    image: "/assets/service-2.jpg",
+    image: "/assets/addons/reel.jpg",
   },
   {
     id: "fast",
     title: "Add “Fast Turnaround” (24HRS)",
     price: 199,
     label: "24HRS",
-    image: "/assets/about-2.jpg",
+    image: "/assets/addons/fast.jpg",
   },
   {
     id: "drone",
     title: "Add Drone Footage",
     price: 49,
     label: "DRONE",
-    image: "/assets/hero.jpg",
+    image: "/assets/addons/drone.jpg",
   },
 ];
 
@@ -154,9 +154,6 @@ export const BOOKING_STEPS = [
 export type BookingStepId = (typeof BOOKING_STEPS)[number]["id"];
 
 export const TIMEZONE = "Australia/Melbourne";
-
-/** Demo availability — weekdays get more slots */
-export const TIME_SLOTS = ["09:00", "12:30", "17:30"] as const;
 
 export type BookingState = {
   packageId: PackageId | null;
@@ -243,7 +240,7 @@ export function melbourneNowLabel() {
   }).format(new Date());
 }
 
-/** Past dates unavailable — Sundays are bookable */
+/** Past calendar days unavailable (local browser date — UI only) */
 export function isDateBookable(date: Date) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -251,25 +248,6 @@ export function isDateBookable(date: Date) {
   day.setHours(0, 0, 0, 0);
   if (day < today) return false;
   return true;
-}
-
-export function slotsForDate(date: string | null): string[] {
-  if (!date) return [];
-  const [y, mo, d] = date.split("-").map(Number);
-  const value = new Date(y, mo - 1, d);
-  if (!isDateBookable(value)) return [];
-  // Saturday: fewer preset slots (custom request still available)
-  if (value.getDay() === 6) return ["09:00", "12:30"];
-  return [...TIME_SLOTS];
-}
-
-/** HH:mm within a sensible shoot window */
-export function isValidCustomTime(time: string) {
-  if (!/^\d{2}:\d{2}$/.test(time)) return false;
-  const [h, m] = time.split(":").map(Number);
-  if (Number.isNaN(h) || Number.isNaN(m)) return false;
-  const minutes = h * 60 + m;
-  return minutes >= 6 * 60 && minutes <= 21 * 60;
 }
 
 export function toIsoDate(date: Date) {

@@ -10,47 +10,29 @@ import { SectionHeader } from "./SectionHeader";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const shots = [
-  {
-    src: "/assets/about-4.jpg",
-    alt: "Athlete portrait in red",
-    className: "md:col-span-2 md:row-span-2 aspect-[4/5] md:aspect-auto md:min-h-[560px]",
-  },
-  {
-    src: "/assets/service-2.jpg",
-    alt: "Training session still",
-    className: "aspect-[4/3]",
-  },
-  {
-    src: "/assets/about-1.jpg",
-    alt: "Fitness lifestyle frame",
-    className: "aspect-[3/4]",
-  },
-  {
-    src: "/assets/about-2.jpg",
-    alt: "Strength photography",
-    className: "md:col-span-2 aspect-[16/10]",
-  },
-  {
-    src: "/assets/about-3.jpg",
-    alt: "Studio athlete shot",
-    className: "aspect-[3/4]",
-  },
-  {
-    src: "/assets/service-1.jpg",
-    alt: "Campaign visual",
-    className: "aspect-[4/5]",
-  },
-  {
-    src: "/assets/feedback-photo.jpg",
-    alt: "Brand collaboration still",
-    className: "md:col-span-2 aspect-[16/9]",
-  },
-  {
-    src: "/assets/hero.jpg",
-    alt: "Dramatic athlete portrait",
-    className: "aspect-[4/5]",
-  },
-] as const;
+  "5-2.jpg",
+  "5-3.jpg",
+  "dsc01096-enhanced-nr.jpg",
+  "dsc01965.jpg",
+  "dsc07003.jpg",
+  "wf000058-2.jpg",
+  "wf001618.jpg",
+  "wf001715.jpg",
+  "wf001919.jpg",
+  "wf005159.jpg",
+  "wf005559.jpg",
+  "wf007014-2.jpg",
+  "wf007087.jpg",
+  "wf008904.jpg",
+  "whyte-films-14.jpg",
+  "whyte-films-25.jpg",
+  "whyte-films-27.jpg",
+  "whyte-films-631.jpg",
+  "whyte-films-81.jpg",
+].map((file) => ({
+  src: `/assets/work/${file}`,
+  alt: "Whyte Films — selected frame",
+}));
 
 export function WorkGallery() {
   const root = useRef<HTMLElement>(null);
@@ -59,15 +41,18 @@ export function WorkGallery() {
     () => {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+      // Don't fade from opacity 0: on this page the grid is already in view,
+      // and that tween was leaving the frames invisible.
       gsap.from(".work-shot", {
-        opacity: 0,
-        y: 40,
-        duration: 0.85,
-        stagger: 0.08,
+        y: 28,
+        duration: 0.7,
+        stagger: 0.04,
         ease: "power3.out",
+        immediateRender: false,
         scrollTrigger: {
           trigger: root.current,
-          start: "top 80%",
+          start: "top 95%",
+          once: true,
         },
       });
     },
@@ -95,14 +80,15 @@ export function WorkGallery() {
           {shots.map((shot) => (
             <div
               key={shot.src}
-              className={`work-shot relative overflow-hidden rounded-xl bg-[#1e1e1e] ${shot.className}`}
+              className="work-shot relative aspect-[2/3] overflow-hidden rounded-xl bg-[#1e1e1e]"
             >
               <Image
                 src={shot.src}
                 alt={shot.alt}
                 fill
+                loading="eager"
                 className="object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 480px"
               />
             </div>
           ))}
