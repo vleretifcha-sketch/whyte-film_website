@@ -11,6 +11,7 @@ export type AddonId = "photos" | "reel" | "fast" | "drone";
 export type BookingPackage = {
   id: PackageId;
   name: string;
+  description: string;
   includes: string;
   /** Full breakdown shown via “Read more” on package cards */
   details: string[];
@@ -35,6 +36,8 @@ export const BOOKING_PACKAGES: BookingPackage[] = [
   {
     id: "focus",
     name: "Focus",
+    description:
+      "A short sharp and cost effective shoot for those looking to capture photos only.",
     includes: "1 × 30min one-on-one videography session",
     details: [
       "1 × 30min one-on-one videography session",
@@ -43,39 +46,61 @@ export const BOOKING_PACKAGES: BookingPackage[] = [
     note: PACKAGE_FEE_NOTE,
     durationLabel: "30 mins",
     durationMinutes: 30,
-    price: 229,
+    price: 249,
   },
   {
     id: "flex",
     name: "Flex",
-    includes: "1 × 45min one-on-one videography session",
+    description:
+      "Our most popular package! All about capturing you or your product at its best and in multiple formats!",
+    includes: "1 × 60min one-on-one videography session",
     details: [
-      "1 × 45min one-on-one videography session",
+      "1 × 60min one-on-one videography session",
+      "1 × 30–60 second highlight reel",
       "10 × premium edited action shots",
-      "1 × 30–59 second highlight reel",
     ],
     note: PACKAGE_FEE_NOTE,
     durationLabel: "1 hr",
     durationMinutes: 60,
-    price: 415,
+    price: 449,
   },
   {
     id: "motion",
     name: "Motion",
+    description:
+      "A larger and more comprehensive package for those looking to build their portfolio or capture a milestone!",
     includes: "1 × 60min one-on-one videography session",
     details: [
       "1 × 60min one-on-one videography session",
-      "2 × 10–30 second highlight reels",
+      "2 × 10–60 second highlight reels",
       "15 × premium edited action shots",
     ],
     note: PACKAGE_FEE_NOTE,
     durationLabel: "1 hr",
     durationMinutes: 60,
-    price: 775,
+    price: 810,
   },
   {
     id: "social",
     name: "Social",
+    description:
+      "A package built for the social influencer, a powerful combo of photo and video resources that can be used to quickly improve your online presence!",
+    includes: "1 × 60min one-on-one photography session",
+    details: [
+      "1 × 60min one-on-one photography session",
+      "2 × 10–60 second highlight reels",
+      "20 × premium edited action shots",
+    ],
+    note: PACKAGE_FEE_NOTE,
+    durationLabel: "1 hr",
+    durationMinutes: 60,
+    price: 1085,
+  },
+  {
+    id: "gallery",
+    name: "Gallery",
+    description:
+      "A photo focused package for those looking to top-up their content library!",
     includes: "1 × 60min one-on-one photography session",
     details: [
       "1 × 60min one-on-one photography session",
@@ -84,23 +109,14 @@ export const BOOKING_PACKAGES: BookingPackage[] = [
     note: PACKAGE_FEE_NOTE,
     durationLabel: "1 hr",
     durationMinutes: 60,
-    price: 1033,
-  },
-  {
-    id: "gallery",
-    name: "Gallery",
-    includes: "1 × 60min one-on-one photography session",
-    details: ["1 × 60min one-on-one photography session"],
-    note: PACKAGE_FEE_NOTE,
-    durationLabel: "1 hr",
-    durationMinutes: 60,
-    price: 465,
+    price: 475,
   },
   {
     id: "studio",
     name: "Studio",
-    includes:
-      "2 hours exclusive studio hire · 50 × premium edited action shots",
+    description:
+      "Exclusive studio hire for your own private photoshoot. Solo, group or product, we've got you covered!",
+    includes: "2 × hours exclusive studio hire",
     details: [
       "2 × hours exclusive studio hire",
       "50 × premium edited action shots",
@@ -109,7 +125,7 @@ export const BOOKING_PACKAGES: BookingPackage[] = [
     note: PACKAGE_FEE_NOTE,
     durationLabel: "2 hr",
     durationMinutes: 120,
-    price: 1495,
+    price: 2599,
   },
 ];
 

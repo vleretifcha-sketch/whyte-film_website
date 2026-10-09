@@ -24,11 +24,8 @@ function PackageCard({ item }: { item: BookingPackage }) {
           {item.name}
         </h2>
         <div>
-          <p className="mb-2 text-xs font-bold uppercase tracking-[0.1em] text-white/45">
-            Includes
-          </p>
           <p className="text-base leading-relaxed text-white/80">
-            {item.includes}
+            {item.description}
           </p>
 
           <div
@@ -38,7 +35,10 @@ function PackageCard({ item }: { item: BookingPackage }) {
             }`}
           >
             <div className="overflow-hidden">
-              <ul className="mt-4 flex flex-col gap-2 border-t border-white/10 pt-4 text-sm leading-relaxed text-white/75">
+              <p className="mb-2 mt-4 text-xs font-bold uppercase tracking-[0.1em] text-white/45">
+                Includes
+              </p>
+              <ul className="flex flex-col gap-2 border-t border-white/10 pt-4 text-sm leading-relaxed text-white/75">
                 {item.details.map((line) => (
                   <li key={line} className="flex gap-2">
                     <span className="mt-[0.55em] size-1 shrink-0 rounded-full bg-white/50" />
