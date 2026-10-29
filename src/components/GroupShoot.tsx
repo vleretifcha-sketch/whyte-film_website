@@ -63,8 +63,8 @@ export function GroupShoot() {
                 Group Shoot
               </h1>
               <p className="mt-6 max-w-[520px] text-base leading-relaxed text-white/70">
-                A shared session for athletes and creators. Register below and
-                we&apos;ll hold your place for the next shoot.
+                A shared session for athletes and creators. Register below to
+                express your interest.
               </p>
             </div>
 
