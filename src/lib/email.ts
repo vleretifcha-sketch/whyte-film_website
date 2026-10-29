@@ -110,3 +110,84 @@ export async function sendBookingConfirmationEmails(
     ].join("\n"),
   });
 }
+
+export const GROUP_SHOOT_NOTIFY_EMAIL = "management@whytefilms.com.au";
+
+export type GroupShootRegistration = {
+  fullName: string;
+  email: string;
+  phone: string;
+  instagram: string;
+  marketingConsent: boolean;
+  sessionLabel: string;
+  timeLabel: string;
+  venue: string;
+};
+
+export async function sendGroupShootRegistrationEmails(
+  payload: GroupShootRegistration,
+): Promise<void> {
+  const instagram = payload.instagram.startsWith("@")
+    ? payload.instagram
+    : `@${payload.instagram}`;
+  const consent = payload.marketingConsent ? "Yes" : "No";
+  const details = [
+    "New group shoot registration",
+    "",
+    `Session: ${payload.sessionLabel}`,
+    `Time: ${payload.timeLabel}`,
+    `Venue: ${payload.venue}`,
+    "",
+    `Full name: ${payload.fullName}`,
+    `Email: ${payload.email}`,
+    `Phone: ${payload.phone}`,
+    `Instagram: ${instagram}`,
+    `Marketing consent: ${consent}`,
+  ].join("\n");
+
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const from =
+    process.env.BOOKING_FROM_EMAIL?.trim() ||
+    "Whyte Films Bookings <onboarding@resend.dev>";
+
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+
+  const { Resend } = await import("resend");
+  const resend = new Resend(apiKey);
+
+  const notify = await resend.emails.send({
+    from,
+    to: GROUP_SHOOT_NOTIFY_EMAIL,
+    replyTo: payload.email,
+    subject: `Group shoot registration — ${payload.fullName}`,
+    text: details,
+  });
+
+  if (notify.error) {
+    throw new Error(notify.error.message);
+  }
+
+  const client = await resend.emails.send({
+    from,
+    to: payload.email,
+    subject: "You're registered for the Whyte Films group shoot",
+    text: [
+      `Hi ${payload.fullName},`,
+      "",
+      "You're registered for the next Whyte Films group shoot.",
+      "",
+      payload.sessionLabel,
+      payload.timeLabel,
+      payload.venue,
+      "",
+      "See you there,",
+      "Whyte Films",
+    ].join("\n"),
+  });
+
+  if (client.error) {
+    console.error("[group-shoot] client confirmation failed", client.error.message);
+  }
+}

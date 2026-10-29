@@ -29,7 +29,7 @@ export function Navbar() {
           />
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-4 lg:gap-6 xl:gap-8 md:flex">
           {navLinks.map((link) => {
             const active = pathname.startsWith(link.href);
             return (
