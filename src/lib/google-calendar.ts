@@ -162,10 +162,29 @@ export async function createBookingEvent(
 
     return { eventId: res.data.id, htmlLink: res.data.htmlLink };
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Google Calendar insert failed";
-    throw new Error(`Google Calendar insert failed: ${message}`, {
+    throw new Error(`Google Calendar insert failed: ${formatGoogleError(error)}`, {
       cause: error,
     });
   }
+}
+
+function formatGoogleError(error: unknown): string {
+  if (!error || typeof error !== "object") {
+    return String(error);
+  }
+
+  const err = error as {
+    message?: string;
+    response?: { status?: number; data?: { error?: { message?: string; status?: string } } };
+    errors?: Array<{ message?: string }>;
+  };
+
+  const apiMessage =
+    err.response?.data?.error?.message ||
+    err.errors?.map((e) => e.message).filter(Boolean).join("; ") ||
+    err.message;
+
+  const status = err.response?.status || err.response?.data?.error?.status;
+  if (status && apiMessage) return `${status}: ${apiMessage}`;
+  return apiMessage || "unknown Google Calendar error";
 }
