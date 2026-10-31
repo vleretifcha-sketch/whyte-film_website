@@ -84,17 +84,24 @@ export async function sendBookingConfirmationEmails(
     return;
   }
 
+  if (!payload.clientEmail?.trim()) {
+    throw new Error("Missing client email for booking confirmation");
+  }
+
   const { Resend } = await import("resend");
   const resend = new Resend(apiKey);
 
-  await resend.emails.send({
+  const businessResult = await resend.emails.send({
     from,
     to: business,
     subject: subjectBusiness,
     text: body,
   });
+  if (businessResult.error) {
+    throw new Error(businessResult.error.message);
+  }
 
-  await resend.emails.send({
+  const clientResult = await resend.emails.send({
     from,
     to: payload.clientEmail,
     subject: subjectClient,
@@ -109,6 +116,9 @@ export async function sendBookingConfirmationEmails(
       "Whyte Films",
     ].join("\n"),
   });
+  if (clientResult.error) {
+    throw new Error(clientResult.error.message);
+  }
 }
 
 export const GROUP_SHOOT_NOTIFY_EMAIL = "management@whytefilms.com.au";

@@ -59,7 +59,6 @@ export async function fulfillPaidBooking(
     description,
     start: start.toJSDate(),
     end: end.toJSDate(),
-    attendeeEmail: booking.clientEmail,
   });
 
   if (!booking.skipEmail) {

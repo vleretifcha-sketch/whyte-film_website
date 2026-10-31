@@ -34,11 +34,32 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const addonIds = parseAddonIds(meta.addonIds).filter(isAddonId) as AddonId[];
   const stripe = getStripe();
 
-  let calendarEventId = meta.calendarEventId || "";
+  const clientName =
+    meta.clientName || session.customer_details?.name || "Client";
+  const clientEmail =
+    meta.clientEmail ||
+    session.customer_email ||
+    session.customer_details?.email ||
+    "";
+  const clientPhone = meta.clientPhone || "";
+  const location = meta.location || "";
+  const reason = meta.reason || "";
+  const source = meta.source || "";
+  const notes = meta.notes || undefined;
+  const social = meta.social || undefined;
+  const amountTotalCents = session.amount_total ?? undefined;
 
+  let calendarEventId = meta.calendarEventId || "";
+  let emailSent = meta.emailSent === "1";
+  let calendarFailed = false;
+
+  // Calendar and email are independent: a Google failure must not block confirmation mail.
   if (!calendarEventId) {
     const { start, end } = dayBoundsMelbourne(date);
-    const busy = await fetchBusyIntervals(start, end);
+    const busy = await fetchBusyIntervals(start, end).catch((err) => {
+      console.warn("[stripe-webhook] freebusy failed — continuing", err);
+      return [];
+    });
 
     try {
       assertSlotBookable(date, time, packageId, busy);
@@ -49,63 +70,81 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       );
     }
 
-    const result = await fulfillPaidBooking({
+    try {
+      const result = await fulfillPaidBooking({
+        packageId,
+        addonIds,
+        date,
+        time,
+        clientName,
+        clientEmail,
+        clientPhone,
+        location,
+        reason,
+        source,
+        notes,
+        social,
+        amountTotalCents,
+        stripeSessionId: session.id,
+        skipEmail: true,
+      });
+      calendarEventId = result.calendarEventId;
+
+      await stripe.checkout.sessions.update(session.id, {
+        metadata: {
+          ...meta,
+          calendarEventId,
+        },
+      });
+    } catch (err) {
+      calendarFailed = true;
+      console.error("[stripe-webhook] calendar create failed", err);
+    }
+  }
+
+  if (!emailSent) {
+    if (!clientEmail) {
+      throw new Error("Webhook missing client email for confirmation");
+    }
+
+    const { sendBookingConfirmationEmails } = await import("@/lib/email");
+    await sendBookingConfirmationEmails({
       packageId,
       addonIds,
       date,
       time,
-      clientName: meta.clientName || session.customer_details?.name || "Client",
-      clientEmail:
-        meta.clientEmail ||
-        session.customer_email ||
-        session.customer_details?.email ||
-        "",
-      clientPhone: meta.clientPhone || "",
-      location: meta.location || "",
-      reason: meta.reason || "",
-      source: meta.source || "",
-      notes: meta.notes || undefined,
-      social: meta.social || undefined,
-      amountTotalCents: session.amount_total ?? undefined,
+      clientName,
+      clientEmail,
+      clientPhone,
+      location,
+      reason,
+      source,
+      notes,
+      social,
+      amountTotalCents,
       stripeSessionId: session.id,
-      skipEmail: true,
     });
-    calendarEventId = result.calendarEventId;
+    emailSent = true;
 
     await stripe.checkout.sessions.update(session.id, {
       metadata: {
         ...meta,
-        calendarEventId,
+        ...(calendarEventId ? { calendarEventId } : {}),
+        emailSent: "1",
       },
     });
   }
 
-  const { sendBookingConfirmationEmails } = await import("@/lib/email");
-  await sendBookingConfirmationEmails({
-    packageId,
-    addonIds,
-    date,
-    time,
-    clientName: meta.clientName || session.customer_details?.name || "Client",
-    clientEmail:
-      meta.clientEmail ||
-      session.customer_email ||
-      session.customer_details?.email ||
-      "",
-    clientPhone: meta.clientPhone || "",
-    location: meta.location || "",
-    reason: meta.reason || "",
-    source: meta.source || "",
-    notes: meta.notes || undefined,
-    social: meta.social || undefined,
-    amountTotalCents: session.amount_total ?? undefined,
-    stripeSessionId: session.id,
-  });
+  if (calendarFailed && !calendarEventId) {
+    // Email is done; ask Stripe to retry so the calendar event can still be created.
+    throw new Error("Booking email sent but Google Calendar event failed");
+  }
 
   await stripe.checkout.sessions.update(session.id, {
     metadata: {
       ...meta,
       calendarEventId,
+      emailSent: "1",
       fulfilled: "1",
     },
   });

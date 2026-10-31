@@ -1,4 +1,5 @@
 import { google } from "googleapis";
+import { DateTime } from "luxon";
 import type { BusyInterval } from "@/lib/availability";
 import { TIMEZONE } from "@/lib/booking";
 
@@ -110,10 +111,22 @@ export type CalendarBookingEventInput = {
   description: string;
   start: Date;
   end: Date;
-  attendeeEmail?: string;
 };
 
-/** Creates a busy event for the shoot only (buffer is not written to Calendar) */
+/** Local wall-clock RFC3339 without offset — paired with timeZone for Google Calendar. */
+function toMelbourneDateTime(date: Date): string {
+  return DateTime.fromJSDate(date, { zone: TIMEZONE }).toFormat(
+    "yyyy-MM-dd'T'HH:mm:ss",
+  );
+}
+
+/**
+ * Creates a busy event on the Whyte Films calendar (buffer is not written).
+ *
+ * Do not add attendees here: Google service accounts cannot invite guests
+ * without Domain-Wide Delegation, and including attendees makes the whole
+ * insert fail — so the shoot never appears on the business calendar.
+ */
 export async function createBookingEvent(
   input: CalendarBookingEventInput,
 ): Promise<{ eventId: string; htmlLink?: string | null }> {
@@ -124,32 +137,35 @@ export async function createBookingEvent(
   const calendar = getCalendarClient();
   const calendarId = getCalendarId();
 
-  const res = await calendar.events.insert({
-    calendarId,
-    requestBody: {
-      summary: input.summary,
-      description: input.description,
-      start: {
-        dateTime: input.start.toISOString(),
-        timeZone: TIMEZONE,
+  try {
+    const res = await calendar.events.insert({
+      calendarId,
+      requestBody: {
+        summary: input.summary,
+        description: input.description,
+        start: {
+          dateTime: toMelbourneDateTime(input.start),
+          timeZone: TIMEZONE,
+        },
+        end: {
+          dateTime: toMelbourneDateTime(input.end),
+          timeZone: TIMEZONE,
+        },
+        transparency: "opaque",
+        status: "confirmed",
       },
-      end: {
-        dateTime: input.end.toISOString(),
-        timeZone: TIMEZONE,
-      },
-      transparency: "opaque",
-      status: "confirmed",
-      ...(input.attendeeEmail
-        ? {
-            attendees: [{ email: input.attendeeEmail }],
-          }
-        : {}),
-    },
-  });
+    });
 
-  if (!res.data.id) {
-    throw new Error("Google Calendar event create returned no id");
+    if (!res.data.id) {
+      throw new Error("Google Calendar event create returned no id");
+    }
+
+    return { eventId: res.data.id, htmlLink: res.data.htmlLink };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Google Calendar insert failed";
+    throw new Error(`Google Calendar insert failed: ${message}`, {
+      cause: error,
+    });
   }
-
-  return { eventId: res.data.id, htmlLink: res.data.htmlLink };
 }
